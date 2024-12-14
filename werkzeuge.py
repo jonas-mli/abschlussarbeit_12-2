@@ -28,8 +28,8 @@ def textur_kacheln(gui, textur, y_pos=0, x_pos=0): # x/y_pos ist um ggf. die Tex
     textur_breite, textur_hoehe = textur.get_size()
     kachel_ebene = pygame.Surface((BREITE, HOEHE))
 
-    for y in range(0, HOEHE, textur_hoehe):
-        for x in range(0,BREITE, textur_breite): 
+    for y in range(0, HOEHE + textur_hoehe + 100 , textur_hoehe):
+        for x in range(0, BREITE + textur_breite + 100, textur_breite): #+100 um überzustehen 
             kachel_ebene.blit(textur, (x + x_pos, y + y_pos))
 
-    return kachel_ebene
+    return kachel_ebene 

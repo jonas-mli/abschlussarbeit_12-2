@@ -1,7 +1,7 @@
-###############################
-# Informatik Projekt Test
-# Stand: 17.11.2024 12:54 Uhr 
-###############################
+##########################################
+# Informatik Abschlussarbeit KGS Turismo
+# Stand: 13.12.2024 21:08 Uhr 
+##########################################
 
 
 #######################################################
@@ -28,7 +28,7 @@ from werkzeuge import bild_skalieren, blit_rotieren, textur_kacheln
 
 #GRAS = bild_skalieren(pygame.image.load("Texturen/Gras.jpg"), 0.85) 
 
-STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 1)
+STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
 
 #STRECKEN_GRENZE = pygame.image.load("Texturen/Strecken_Grenze.png")
 ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png")
@@ -50,7 +50,7 @@ def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen
 
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() # Weil Spielfenster von Strecke ausgefüllt werden soll 
 GUI = pygame.display.set_mode((BREITE, HOEHE)) #Spielfenster
-pygame.display.set_caption("KGS Turismo") # Vielleicht KGS Rennspiel? / Gibt den Spielfenstertitel an
+pygame.display.set_caption("KGS Turismo - Hauptmenü") # Vielleicht KGS Rennspiel? / Gibt den Spielfenstertitel an
 
 GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg"))
 
@@ -88,7 +88,7 @@ class AbstractCar: #Generell Auto Klasse (Namen muss geändert werden)
           self.bewegen()
 
      def bremsen(self):
-          self.v = max(self.v - (self.v * .25 ) , 0)
+          self.v = max(self.v - (self.v * 0.15 ) , 0)
           self.bewegen()
      
      def bewegen(self):
