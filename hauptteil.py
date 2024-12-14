@@ -153,8 +153,13 @@ def hauptmenu():
      m_aktiv = True 
      text1 = schrift.render("Spiel starten", True, (schwarz))
      text2 = schrift.render("Spiel beenden", True, (schwarz))
-     button_start_rect = pygame.Rect(BREITE // 2 - 100, HOEHE // 2 - 60, 200, 50) 
-     button_stop_rect = pygame.Rect(BREITE // 2 - 100, HOEHE // 2 + 20, 200, 50)
+
+     BUTTON_BREITE = 250
+     BUTTON_HOEHE = 50
+     
+     button_start_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 - 60, BUTTON_BREITE, BUTTON_HOEHE)
+     button_stop_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 20, BUTTON_BREITE, BUTTON_HOEHE)
+
 
      while m_aktiv:
           clock.tick(FPS)
