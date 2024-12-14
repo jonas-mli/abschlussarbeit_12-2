@@ -19,9 +19,9 @@ import pygame
 from werkzeuge import bild_skalieren, blit_rotieren, textur_kacheln
 
 
-##################
-# Texturen laden 
-##################
+############################
+# Fenster & Texturen laden 
+############################
 
 # Texturenpfade als Konstanten definieren (CAPS weil Konstante)
 # Bei Bedarf mit Funktion bild_skalieren(bild, wert) skalieren 
@@ -36,10 +36,17 @@ ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png")
 FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.05)
 PORSCHE = pygame.image.load("Texturen/Porsche.png")
 
+BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() # Weil Spielfenster von Strecke ausgefüllt werden soll 
+GUI = pygame.display.set_mode((BREITE, HOEHE)) #Spielfenster
+GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg"))
 
-###########
-# Fenster 
-###########
+bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0))]
+
+pygame.display.set_caption("KGS Turismo - Hauptmenü") # Vielleicht KGS Rennspiel? / Gibt den Spielfenstertitel an
+
+##################
+# Autos zeichnen
+##################
 
 def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen
      for x, pos in bilder:
@@ -48,18 +55,8 @@ def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen
      pygame.display.update() # Aktualisiert Bildschirm
 
 
-BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() # Weil Spielfenster von Strecke ausgefüllt werden soll 
-GUI = pygame.display.set_mode((BREITE, HOEHE)) #Spielfenster
-pygame.display.set_caption("KGS Turismo - Hauptmenü") # Vielleicht KGS Rennspiel? / Gibt den Spielfenstertitel an
-
-GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg"))
-
-FPS = 60
-
-
-class AbstractCar: #Generell Auto Klasse (Namen muss geändert werden) 
-     
-#Klassen sind wie Eigenschaften für eibne bestimmte Sache. Sachen können mehrere Klassen besitzen und Klassen können ineinander vererbt werden (siehe class SpielerAuto)
+class AbstractCar: #Generell Auto Klasse (Namen muss geändert werden)      
+#Klassen sind wie Eigenschaften für eine bestimmte Sache. Sachen können mehrere Klassen besitzen und Klassen können ineinander vererbt werden (siehe class SpielerAuto)
    
      def __init__(self, max_v, rotations_v): #self verweist auf sich selber, der rest sind standard Abhängigkeiten wie von Funktionen gewöhnt
           self.bild = self.AUTOBILD
@@ -104,7 +101,6 @@ class AbstractCar: #Generell Auto Klasse (Namen muss geändert werden)
           self.bewegen()
 
 
-
 class SpielerAuto(AbstractCar): #Attribute für Spielerauto
      AUTOBILD = FERRARI
      START_POS = (40, 120)
@@ -118,11 +114,14 @@ def spieler_bewegen(spielerauto):
           spieler_auto.vorwaerts_bewegen()
      
 
+##############
+# Spiel-loop
+##############
 
 spieler_auto = SpielerAuto(8,5) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
-bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0))]
 aktiv = True 
 clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
+FPS = 60
 
 while aktiv: #Spielengine
      clock.tick(FPS)  # Clock begrenzt den Loop
