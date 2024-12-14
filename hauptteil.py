@@ -22,8 +22,8 @@ from werkzeuge import bild_skalieren, blit_rotieren, textur_kacheln
 # Farben
 ##########
 
-weiss = 0, 0, 0
-schwarz = 255, 255, 255
+schwarz = 0, 0, 0
+weiss = 255, 255, 255
 
 ############################
 # Fenster & Texturen laden 
@@ -139,37 +139,45 @@ def spieler_bewegen(spieler_auto):
 
      if not bewegt:
           spieler_auto.reibung()
-            
+
+
 #############
 # Hauptmenü
 #############
 
 schrift = pygame.font.SysFont("Arial", 40, False, False)
-text1 = schrift.render("Spiel starten", True, (weiss))
-text2 = schrift.render("Spiel beenden", True, (weiss))
-m_aktiv = True 
+
 
 
 def hauptmenu():
+     m_aktiv = True 
+     text1 = schrift.render("Spiel starten", True, (schwarz))
+     text2 = schrift.render("Spiel beenden", True, (schwarz))
+     button_start_rect = pygame.Rect(BREITE // 2 - 100, HOEHE // 2 - 60, 200, 50) 
+     button_stop_rect = pygame.Rect(BREITE // 2 - 100, HOEHE // 2 + 20, 200, 50)
+
      while m_aktiv:
           clock.tick(FPS)
           GUI.fill(schwarz)
-          GUI.blit(text1, (BREITE // 2 - text1.get_width() // 2, HOEHE // 2 - 60))
-          GUI.blit(text2, (BREITE // 2 - text2.get_width() // 2, HOEHE // 2 + 20))
+
+          pygame.draw.rect(GUI, weiss, button_start_rect)
+          pygame.draw.rect(GUI, weiss, button_stop_rect)
+          GUI.blit(text1, (button_start_rect.x + button_start_rect.width // 2 - text1.get_width() // 2, button_start_rect.y + button_start_rect.height // 2 - text1.get_height() // 2))
+          GUI.blit(text2, (button_stop_rect.x + (button_stop_rect.width // 2) - text2.get_width() // 2, button_stop_rect.y + button_stop_rect.height // 2 - text2.get_height() // 2))
           pygame.display.update()
 
-for event in pygame.event.get():
-            if event.type == pygame.QUIT:  #fenster schließen
-                pygame.quit()
-                quit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:  # spiel starten
-                    m_aktiv = False  # menü schließen
-                if event.key == pygame.K_2:  #spiel beenden
+          for event in pygame.event.get():
+               if event.type == pygame.QUIT:  #fenster schließen
                     pygame.quit()
                     quit()
 
+               if event.type == pygame.MOUSEBUTTONDOWN:  
+                    mouse_pos = pygame.mouse.get_pos()   
+                    if button_start_rect.collidepoint(mouse_pos):  
+                         m_aktiv = False  
+                    if button_stop_rect.collidepoint(mouse_pos):  
+                         pygame.quit()
+                         quit()
 
 
 ##############
@@ -182,11 +190,12 @@ aktiv = True
 clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
 
 pygame.display.set_caption("KGS Turismo - Spiel")
-#hauptmenu()
+hauptmenu()
 
+GUI.fill(weiss)
+pygame.display.update()
 
 while aktiv: #Spielengine
-
      
      clock.tick(FPS)  # Clock begrenzt den Loop
 
