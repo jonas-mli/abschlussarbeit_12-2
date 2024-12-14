@@ -14,10 +14,16 @@
 ################
 
 import math 
-import time
 import pygame
 from werkzeuge import bild_skalieren, blit_rotieren, textur_kacheln
 
+
+##########
+# Farben
+##########
+
+weiss = 0, 0, 0
+schwarz = 255, 255, 255
 
 ############################
 # Fenster & Texturen laden 
@@ -26,11 +32,11 @@ from werkzeuge import bild_skalieren, blit_rotieren, textur_kacheln
 # Texturenpfade als Konstanten definieren (CAPS weil Konstante)
 # Bei Bedarf mit Funktion bild_skalieren(bild, wert) skalieren 
 
-#GRAS = bild_skalieren(pygame.image.load("Texturen/Gras.jpg"), 0.85) 
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
 
 #STRECKEN_GRENZE = pygame.image.load("Texturen/Strecken_Grenze.png")
+#STRECKEN_GRENZE_MASKE = pygame.mask.from_surface(STRECKEN_GRENZE)
 ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png")
 
 FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.05)
@@ -42,7 +48,8 @@ GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg"))
 
 bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0))]
 
-pygame.display.set_caption("KGS Turismo - Hauptmenü") # Vielleicht KGS Rennspiel? / Gibt den Spielfenstertitel an
+pygame.init()
+pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
 
 ##################
 # Autos zeichnen
@@ -96,45 +103,20 @@ class AbstractCar: #Generell Auto Klasse (Namen muss geändert werden)
           self.y -= vertikale #Wegen Winkel muss subtrahiert werden
           self.x -= horizontale
 
-     def reibung(self):
-          self.v = max(self.v - self.beschleunigung / 1.2, 0)
-          self.bewegen()
-
+#     def kollidieren(self, maske, x=0, y=0):
+#          auto_maske = pygame.mask.from_surface(self.img)
+#          offset = (int(), int())
+          
 
 class SpielerAuto(AbstractCar): #Attribute für Spielerauto
      AUTOBILD = FERRARI
      START_POS = (40, 120)
 
-def spieler_bewegen(spielerauto):
-     if taste[pygame.K_a]:
-          spieler_auto.rotieren(links=True)
-     if taste[pygame.K_d]:
-          spieler_auto.rotieren(rechts=True)
-     if taste[pygame.K_w]:
-          spieler_auto.vorwaerts_bewegen()
-     
+     def reibung(self):
+          self.v = max(self.v - self.beschleunigung / 1.2, 0)
+          self.bewegen()
 
-##############
-# Spiel-loop
-##############
-
-spieler_auto = SpielerAuto(8,5) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
-aktiv = True 
-clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
-FPS = 60
-
-while aktiv: #Spielengine
-     clock.tick(FPS)  # Clock begrenzt den Loop
-
-     zei(GUI, bilder, spieler_auto)
-     GUI.blit(ZIEL_LINIE, (10, 200))  # Fenster.maleBild(Textur, (Position))
-     GUI.blit(FERRARI, (40, 120))
-    
-     for event in pygame.event.get():
-          if event.type == pygame.QUIT:
-            aktiv = False
-            break
-     
+def spieler_bewegen(spieler_auto):
      taste = pygame.key.get_pressed()
      bewegt = False 
 
@@ -158,6 +140,62 @@ while aktiv: #Spielengine
      if not bewegt:
           spieler_auto.reibung()
             
+#############
+# Hauptmenü
+#############
+
+schrift = pygame.font.SysFont("Arial", 40, False, False)
+text1 = schrift.render("Spiel starten", True, (weiss))
+text2 = schrift.render("Spiel beenden", True, (weiss))
+m_aktiv = True 
+"""
+
+def hauptmenu():
+     while m_aktiv:
+          clock.tick(FPS)
+          GUI.fill(schwarz)
+          GUI.blit(text1, (BREITE // 2 - text1.get_width() // 2, HOEHE // 2 - 60))
+          GUI.blit(text2, (BREITE // 2 - text2.get_width() // 2, HOEHE // 2 + 20))
+          pygame.display.update()
+
+for event in pygame.event.get():
+            if event.type == pygame.QUIT:  #fenster schließen
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:  # spiel starten
+                    m_aktiv = False  # menü schließen
+                if event.key == pygame.K_2:  #spiel beenden
+                    pygame.quit()
+                    quit()
+
+"""
+
+##############
+# Spiel-loop
+##############
+
+FPS = 60
+spieler_auto = SpielerAuto(8,3) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
+aktiv = True 
+clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
+
+#hauptmenu()
+
+while aktiv: #Spielengine
+     clock.tick(FPS)  # Clock begrenzt den Loop
+
+     zei(GUI, bilder, spieler_auto)
+     GUI.blit(ZIEL_LINIE, (10, 200))  # Fenster.maleBild(Textur, (Position))
+     GUI.blit(FERRARI, (40, 120))
+    
+     for event in pygame.event.get():
+          if event.type == pygame.QUIT:
+            aktiv = False
+            break
+     
+     spieler_bewegen(spieler_auto)
 
 
 pygame.quit()
