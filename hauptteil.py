@@ -148,7 +148,7 @@ schrift = pygame.font.SysFont("Arial", 40, False, False)
 text1 = schrift.render("Spiel starten", True, (weiss))
 text2 = schrift.render("Spiel beenden", True, (weiss))
 m_aktiv = True 
-"""
+
 
 def hauptmenu():
      while m_aktiv:
@@ -170,20 +170,24 @@ for event in pygame.event.get():
                     pygame.quit()
                     quit()
 
-"""
+
 
 ##############
 # Spiel-loop
 ##############
 
 FPS = 60
-spieler_auto = SpielerAuto(8,3) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
+spieler_auto = SpielerAuto(4,3) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
 aktiv = True 
 clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
 
+pygame.display.set_caption("KGS Turismo - Spiel")
 #hauptmenu()
 
+
 while aktiv: #Spielengine
+
+     
      clock.tick(FPS)  # Clock begrenzt den Loop
 
      zei(GUI, bilder, spieler_auto)
