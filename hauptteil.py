@@ -43,6 +43,8 @@ GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg"))
 bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0))]
 
 pygame.init()
+pygame.mixer.init()
+
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
 
 ##################
