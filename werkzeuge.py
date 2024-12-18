@@ -1,5 +1,6 @@
 import pygame
 import math 
+from sound import musik, sfx
 #############
 #Konstanten
 #############
@@ -39,6 +40,20 @@ def grau_farbverlauf(gui, breite, hoehe):
         grau_wert = 255 - int((y / hoehe) * 255)  
         farbe = (grau_wert, grau_wert, grau_wert)  
         pygame.draw.line(gui, farbe, (0, y), (breite, y))  
+
+def sfx_spielen(effekt):
+     if effekt in sfx:
+          sfx[effekt].play()
+
+
+def musik_spielen(song, loop=-1, lautstaerke=0.8):
+    if song in musik:
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load(musik[song])
+        pygame.mixer.music.set_volume(lautstaerke)
+        pygame.mixer.music.play(loop)
+
+
 
 
 

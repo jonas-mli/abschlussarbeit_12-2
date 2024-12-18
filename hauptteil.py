@@ -9,8 +9,8 @@
 
 import math 
 import pygame
-from werkzeuge import bild_skalieren, blit_rotieren, textur_kacheln, grau_farbverlauf, AbstractCar
-
+from sound import *
+from werkzeuge import *
 
 ##########
 # Farben
@@ -43,7 +43,7 @@ GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg"))
 bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0))]
 
 pygame.init()
-pygame.mixer.init()
+#pygame.mixer.init()
 
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
 
@@ -104,7 +104,7 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 
 
 #############
-# Hauptmenü
+# Hauptmenü 
 #############
 
 schrift = pygame.font.SysFont("Arial", 40, False, False)
@@ -120,6 +120,7 @@ def hauptmenu():
      button_start_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 - 60, BUTTON_BREITE, BUTTON_HOEHE)
      button_stop_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 20, BUTTON_BREITE, BUTTON_HOEHE)
 
+     musik_spielen("m.chiptune")
 
      while m_aktiv:
           clock.tick(FPS)
@@ -146,6 +147,44 @@ def hauptmenu():
                          quit()
 
 
+############
+#Pausemenü
+############
+
+def pause_menu():
+    pausiert = True
+    text_weiter = schrift.render("Weiter", True, (0, 0, 0))
+    text_hauptmenu = schrift.render("Hauptmenü", True, (0, 0, 0))
+    
+    BUTTON_BREITE = 250
+    BUTTON_HOEHE = 50
+
+    button_weiter_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 - 60, BUTTON_BREITE, BUTTON_HOEHE)
+    button_hauptmenu_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 20, BUTTON_BREITE, BUTTON_HOEHE)
+
+    while pausiert:
+        clock.tick(FPS)
+        grau_farbverlauf(GUI, BREITE, HOEHE)
+
+        pygame.draw.rect(GUI, weiss, button_weiter_rect)
+        pygame.draw.rect(GUI, weiss, button_hauptmenu_rect)
+        GUI.blit(text_weiter, (button_weiter_rect.x + button_weiter_rect.width // 2 - text_weiter.get_width() // 2, button_weiter_rect.y + button_weiter_rect.height // 2 - text_weiter.get_height() // 2))
+        GUI.blit(text_hauptmenu, (button_hauptmenu_rect.x + button_hauptmenu_rect.width // 2 - text_hauptmenu.get_width() // 2, button_hauptmenu_rect.y + button_hauptmenu_rect.height // 2 - text_hauptmenu.get_height() // 2))
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if button_weiter_rect.collidepoint(mouse_pos):
+                    paused = False  
+                if button_hauptmenu_rect.collidepoint(mouse_pos):
+                    hauptmenu()  
+                    return False  
+    return True  
+
 ##############
 # Spiel-loop
 ##############
@@ -153,6 +192,7 @@ def hauptmenu():
 FPS = 60
 spieler_auto = SpielerAuto(4,3) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
 aktiv = True 
+pausiert = False
 clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
 
 pygame.display.set_caption("KGS Turismo - Spiel")
@@ -161,24 +201,31 @@ hauptmenu()
 GUI.fill(weiss)
 pygame.display.update()
 
-while aktiv: #Spielengine
-     
-     clock.tick(FPS)  # Clock begrenzt den Loop
+musik_spielen("m.8bit_mix")
 
-     zei(GUI, bilder, spieler_auto,ZIEL_LINIE) # Zeiche(GUI, bilder, auto, ziellinie)
+while aktiv:   
+     if not pausiert:    
+          clock.tick(FPS)  # Clock begrenzt den Loop
 
-     tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)
-     pygame.display.update()
+          zei(GUI, bilder, spieler_auto,ZIEL_LINIE) # Zeiche(GUI, bilder, auto, ziellinie)
 
-     for event in pygame.event.get():
-          if event.type == pygame.QUIT:
-            aktiv = False
-            break
-     
-     spieler_bewegen(spieler_auto)
+          tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)
+          pygame.display.update()
 
-#     if spieler_auto.kollidieren(STRECKEN_GRENZE_MASKE,) != None:
+          for event in pygame.event.get():
+               if event.type == pygame.QUIT:
+                    aktiv = False
+                    break
+          
+          spieler_bewegen(spieler_auto)
+
+#          if spieler_auto.kollidieren(STRECKEN_GRENZE_MASKE,) != None:
 #          spieler_auto.rueckstoss()
-
+     else:
+          neu_starten = pause_menu(start_menu=False)
+          if not neu_starten: 
+               spieler_auto = SpielerAuto(4, 3)
+               pausiert = False
+     
 
 pygame.quit()
