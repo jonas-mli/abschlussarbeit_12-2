@@ -9,6 +9,7 @@ pygame.mixer.init()
 
 sfx = {
     "s.car_engine":pygame.mixer.Sound("Sounds/sfx/car_engine.mp3"),
+    "s.car_engine2":pygame.mixer.Sound("Sounds/sfx/car_engine2.mp3"),
     "s.countdown":pygame.mixer.Sound("Sounds/sfx/countdown.mp3"),
     "s.lose":pygame.mixer.Sound("Sounds/sfx/lose.mp3"),
     "s.lose2":pygame.mixer.Sound("Sounds/sfx/lose2.mp3"),

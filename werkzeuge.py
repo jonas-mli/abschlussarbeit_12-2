@@ -57,6 +57,7 @@ def musik_spielen(song, loop=-1, lautstaerke=0.8):
 
 
 
+
 ###########
 # Klassen
 ###########
