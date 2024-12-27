@@ -1,6 +1,13 @@
+
+##########
+# Import
+##########
+
+
 import pygame
 import math 
 from sound import musik, sfx
+
 #############
 #Konstanten
 #############
@@ -108,7 +115,7 @@ class AbstractCar: #Generell Auto Klasse (Namen muss geändert werden)
           self.bewegen()
 
      def kollidieren(self, maske, x=0, y=0):
-          auto_maske = pygame.mask.from_surface(self.img)
+          auto_maske = pygame.mask.from_surface(self.bild)
           offset = (int(self.x  - x), int(self.y - y))
           schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt 
 

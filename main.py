@@ -31,36 +31,39 @@ dunkelblau = 0, 30, 80
 
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
-#STRECKEN_GRENZE = bild_skalieren(pygame.image.load("Texturen/Strecken_Grenze.png"), .95)
-#STRECKEN_GRENZE_MASKE = pygame.mask.from_surface(STRECKEN_GRENZE)
-ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png")
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), .95)
+BANDE_MASKE = pygame.mask.from_surface(BANDE)
+
+ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png") #Bande muss Linie Übermalen
+ZIEL_POS = (10,200)
+ZIEL_LINIE_MASKE = pygame.mask.from_surface(ZIEL_LINIE)
+
 FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.05)
-PORSCHE = pygame.image.load("Texturen/Porsche.png")
+PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.07)
+
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() # Weil Spielfenster von Strecke ausgefüllt werden soll 
 GUI = pygame.display.set_mode((BREITE, HOEHE)) #Spielfenster
 GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg"))
 
-bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0))]
+bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0)), (ZIEL_LINIE, ZIEL_POS),(BANDE, (0, 0))] #(BANDE, (0, 0))Liste mit Hintergrundobjekten 
 
 pygame.init()
-#pygame.mixer.init()
-
+pygame.mixer.init()
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
 
 ##################
 # Autos zeichnen
 ##################
 
-def zei(gui, bilder, spieler_auto, ziel_linie): #Zei = Kurzform für Zeichnen
+def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
      for x, pos in bilder:
           gui.blit(x, pos)
      spieler_auto.zei(gui)
-     gui.blit(ziel_linie, (10, 200))
      pygame.display.update() # Aktualisiert Bildschirm
         
 
 class SpielerAuto(AbstractCar): #Attribute für Spielerauto
-     AUTOBILD = FERRARI
+     AUTOBILD = PORSCHE
      START_POS = (40, 120)
 
      
@@ -90,17 +93,17 @@ def spieler_bewegen(spieler_auto):
 
 
 def tacho(gui, pos_x, pos_y, spieler_auto):    
-    #hintergrund_f = (dunkelgrau)            
-    #rahmen_f = (rot)         
-    #radius = 60
+#    hintergrund_f = (dunkelgrau)            
+#    rahmen_f = (rot)         
+    radius = 60
 
     text_f = (weiss)
-    kmh = abs(int(spieler_auto.v * 20))
+    kmh = abs(int(spieler_auto.v * 31))
     schrift = pygame.font.SysFont("Arial", 24, True)
     text = schrift.render(f"{kmh} km/h", True, text_f)
 
-    #pygame.draw.circle(gui, hintergrund_f, (pos_x, pos_y), radius)  
-    #pygame.draw.circle(gui, rahmen_f, (pos_x, pos_y), radius, 4)       
+#    pygame.draw.rect(gui, hintergrund_f, (pos_x, pos_y))  
+#    pygame.draw.circle(gui, rahmen_f, (pos_x, pos_y), radius, 4)       
     gui.blit(text, (pos_x - text.get_width() // 2, pos_y - text.get_height() // 2))
 
 
@@ -206,7 +209,7 @@ def pause_menu():
 ##############
 
 FPS = 60
-spieler_auto = SpielerAuto(4,3) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
+spieler_auto = SpielerAuto(4,4) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
 aktiv = True 
 pausiert = False
 clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
@@ -224,7 +227,7 @@ while aktiv:
      if not pausiert:    
           clock.tick(FPS)  # Clock begrenzt den Loop
 
-          zei(GUI, bilder, spieler_auto,ZIEL_LINIE) # Zeiche(GUI, bilder, auto, ziellinie)
+          zei(GUI, bilder, spieler_auto) # Zeichne(GUI, bilder, auto,)
           tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)
           pygame.display.update()
 
@@ -239,8 +242,12 @@ while aktiv:
           
           spieler_bewegen(spieler_auto)
 
-#          if spieler_auto.kollidieren(STRECKEN_GRENZE_MASKE,) != None:
-#          spieler_auto.rueckstoss()
+          if spieler_auto.kollidieren(BANDE_MASKE,) != None:
+               spieler_auto.rueckstoss()
+
+          if spieler_auto.kollidieren(ZIEL_LINIE_MASKE, *ZIEL_POS) != None: #* spaltet Tupel in 2 individuelle Koordinaten also (ZIEL_LINIE_MASKE,x,y)
+               print("finnisches Ziel")
+
      
      else: #pause situation
           fortsetzen = pause_menu()
