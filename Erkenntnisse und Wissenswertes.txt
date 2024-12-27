@@ -1,0 +1,167 @@
+Diese Datei dient dem sammeln und manifestieren von Erkenntnissen,
+die während der recherche oder erstellung der arbeit entstanden sind
+
+zweck dabei ist, diese einheitlich zu sammeln um das programmieren zu vereinfachen
+
+DATENTYPEN: https://www.hdm-stuttgart.de/~maucher/Python/html/Datentypen.html 
+
+MODULE sind alleinstehende (python) dateien mit definierten variablen, funktionen, klassen etc.
+um sie zu definieren benötigt man lediglich eine neue python datei. 
+module müssen im gleichen verzeichnis sein, um gefunden zu werden.
+Bspw.:
+    
+    from modul import funktion 
+oder 
+    import modul
+
+
+TUPEL ist termini für eine klammer mit mehreren werten wie (1,2)
+
+
+ITERATION = durchlauf einer liste/strings/dictionary/anderer Datenstruktur nach stelle für laufzeitvariable
+Bspw.:
+
+    for x in range(10):
+        print(liste[x])
+
+
+FORMATTED STRINGS sind eine möglichkeit, variablen in einen string zu integrieren
+Bspw.:
+    
+    for x in range(10)
+        txt = f" {x} Minute(n) habe(n) {x * 60} Sekunden."
+        print(txt)
+
+FUNKTIONSSCHREIBWEISE: das aufrufen einer funktion als solche (mit entsprechenden argumenten)
+allgemein und funktioniert mit mehreren datentypen
+Bspw.: len(objekt)
+
+
+METHODENSCHREIBWEISE: Methode ist ausdruck für eine an ein objekt gebundene funktion 
+spezifisch für einen objekttypen / funktioniert ausschließlich für dieses objekt
+Bspw.: objekt.append(wert)
+
+
+FUNKTIONEN HÖHERER ORDNUNG sind die funktionen, die andere funktionen als argument nehmen oder zurückgeben
+Bspw.:
+
+    def hohe_funktion(unterfunktion, wert):
+        return unterfunktion(wert)
+
+
+LAMBDAS sind temporäre, unbenannte funktionen, die man verwenden kann um kleine funktionen nicht definieren zu müssen
+Syntax: 
+    lambda argumente: ausdruck
+
+Bspw.:
+    
+    addiere = lambda x, y: x + y
+    print(addiere(3, 4))
+
+statt 
+    def addiere(x, y):
+        return x + y
+
+    print(addiere(3, 4))        
+
+LAMBDAS IN FUNKTIONEN HÖHERER ORDNUNG & TYPISCHE LAMBDA FUNKTIONEN:
+map()  wendet eine funktion auf jedes element einer iterable (liste,dictionary,string, etc) an
+Bspw.:
+    zahlen = [1, 2, 3, 4]
+    doppeln = list(map(lambda x: x * 2, zahlen))
+
+filter() filtert Elemente einer iterable nach einer boolean funktion (also fkt. die wahr oder falsch zurückgibt)
+Bspw.:
+    zahlen = [1, 2, 3, 4, 5, 6]
+    gerade_zahlen = list(filter(lambda x: x % 2 == 0, zahlen))
+
+
+LIST COMPREHENSIONS sind effizienter weg um schnell listen ohne schleife erstellen zu können
+Syntax:
+    [ausdruck for element in iterable if bedingung]
+
+Bsp. 1 (Quadratzahlen):
+    quadrate = [x**2 for x in range(10)]
+    print(quadrate)
+
+Bsp. 2 (Nur gerade Quadrate):
+    quadrate_gerade = [x**2 for x in range(10) if x % 2 == 0]
+    print(quadrate_gerade)
+Bsp. 3 (Zahlenpaare):
+    paare = [(x, y) for x in range(3) for y in range(3)]
+    print(paare)
+
+GENERATOREN sind wie list comprehensions nur mit runden klammern 
+Bspw.:
+    generator = (x**2 for x in range(10)) 
+    print(next(generator)) # next returnt werte
+yield ist ein typischer operator für generatoren, da er wie return funktioniert, aber die funktion nicht beendet
+Bspw.:
+    
+    def fibonacci(limit):
+        a, b = 0, 1
+        while a < limit:
+            yield a
+            a, b = b, a + b
+
+    for zahl in fibonacci(10):
+        print(zahl)
+
+
+DATEIEN SCHREIBEN / LESEN ist sehr nützlich zum speichern von permanenten Daten 
+Bsp. Schreiben:
+
+    with open("test.txt", "w") as file:
+        file.write("text")
+
+Bsp. Lesen:
+
+    with open("test.txt", "r") as file:
+        inhalt = file.read()
+        print(inhalt)
+
+FEHLERBEHANDLUNG ist eine möglichkeit, einen crash bei falscher eingabe vorzubeugen
+
+Bspw. (invalide Zahl):
+
+    while True:
+        try:
+            x = int(input("Zahl eingeben: "))
+            break
+        except ValueError:
+            print("Das war keine zulässige Zahl. \nBitte versuche es erneut")
+
+Bspw. (Debugging bei /0):
+    
+    try:       
+        zahl = 10 / 0
+    except ZeroDivisionError as e:
+        # Fehlerbehandlung
+        print("Fehler:",e)
+    finally: #wird am ende ausgeführt
+        print("ende")
+
+DEKORATOREN sind zuerst recht schwierig zu verstehen, aber dafür sehr nützlich
+Sie können per "@" vor fkt. aufgerufen werden, und diese dann über ihren wrapper vor oder nach ausführung erweitern
+https://www.python-kurs.eu/python3_dekorateure.php 
+
+Bspw.:
+
+        def dekorator(funktion):
+        def wrapper():
+            print("Vor funktion")
+            funktion()
+            print("nach der funktion ")
+        return wrapper
+
+    @dekorator
+    def hallo():
+        print("hello workld")
+
+    hallo()
+
+TYPANNOTATIONEN helfen wenn es probleme mit datentypen gibt, indem man den Datentyp manuell festlegt
+Bspw.:
+    def addieren(a: int, b: int) -> int:
+        return a + b
+

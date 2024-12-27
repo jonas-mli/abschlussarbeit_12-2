@@ -155,7 +155,6 @@ def hauptmenu():
                          pygame.quit()
                          quit()
 
-
 ############
 #Pausemenü
 ############
