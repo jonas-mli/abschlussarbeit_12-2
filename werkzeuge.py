@@ -3,17 +3,20 @@
 # Import
 ##########
 
-
 import pygame
 import math 
 from sound import musik, sfx
 
-#############
-#Konstanten
-#############
 
-STRECKE = pygame.image.load("Texturen/Strecke.png")
-BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
+##########
+# Farben
+##########
+
+schwarz = 0, 0, 0
+weiss = 255, 255, 255
+dunkelgrau = 30, 30, 30
+rot = 200, 0, 0
+dunkelblau = 0, 30, 80
 
 
 ##############
@@ -25,11 +28,9 @@ def blit_rotieren(gui, bild, oben_links, winkel):
     neues_rechteck = rotiertes_bild.get_rect(center = bild.get_rect(topleft = oben_links).center) #benötigt um Viereck des Bildes zu rotieren, ohne x und y Koordinaten zu verändern oder Bild zu verzerren. Erklärung: Neues Riereck soll zentriert zu Viereck des Bildes an der Stekke oben Links sein 
     gui.blit(rotiertes_bild, neues_rechteck.topleft)
 
-
 def bild_skalieren(bild, wert):
     groesse = round(bild.get_width() * wert), round(bild.get_height() * wert)
     return pygame.transform.scale(bild, groesse)
-
 
 def textur_kacheln(gui, textur, y_pos=0, x_pos=0): # x/y_pos ist um ggf. die Textur zu verschieben 
     # So oft zeichnen, wie es nötig ist, um die Breite des Bildschirms zu füllen
@@ -52,7 +53,6 @@ def sfx_spielen(effekt):
      if effekt in sfx:
           sfx[effekt].play()
 
-
 def musik_spielen(song, loop=-1, lautstaerke=0.8):
     if song in musik:
         pygame.mixer.music.stop()
@@ -60,16 +60,75 @@ def musik_spielen(song, loop=-1, lautstaerke=0.8):
         pygame.mixer.music.set_volume(lautstaerke)
         pygame.mixer.music.play(loop)
 
+def spieler_bewegen(spieler_auto):
+     taste = pygame.key.get_pressed()
+     bewegt = False 
+
+     if spieler_auto.v != 0 and taste[pygame.K_a]:
+          spieler_auto.rotieren(links=True)
+
+     if spieler_auto.v != 0 and taste[pygame.K_d]:
+          spieler_auto.rotieren(rechts=True)
+
+     if taste[pygame.K_w]:
+          bewegt = True
+          spieler_auto.vorwaerts_bewegen()
+
+     if spieler_auto.v <= 0 and taste[pygame.K_s]:
+          bewegt = True
+          spieler_auto.rueckwarts_bewegen()
+
+     if spieler_auto.v > 0 and taste[pygame.K_s]:
+          spieler_auto.bremsen()
+
+     if not bewegt:
+          spieler_auto.reibung()
+
+def tacho(gui, pos_x, pos_y, spieler_auto):    
+#    hintergrund_f = (dunkelgrau)            
+#    rahmen_f = (rot)         
+#    radius = 60
+
+    text_f = (weiss)
+    kmh = abs(int(spieler_auto.v * 31))
+    schrift = pygame.font.SysFont("Arial", 24, True)
+    text = schrift.render(f"{kmh} km/h", True, text_f)
+
+#    pygame.draw.rect(gui, hintergrund_f, (pos_x, pos_y))  
+#    pygame.draw.circle(gui, rahmen_f, (pos_x, pos_y), radius, 4)       
+    gui.blit(text, (pos_x - text.get_width() // 2, pos_y - text.get_height() // 2))
+
+def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
+     for x, pos in bilder:
+          gui.blit(x, pos)
+     spieler_auto.zei(gui)
+     pygame.display.update() # Aktualisiert Bildschirm
 
 
+##############
+# zusätzliche Texturen als Konstanten laden
+##############
+
+STRECKE = pygame.image.load("Texturen/Strecke.png")
+BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
+
+STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), .95)
+BANDE_MASKE = pygame.mask.from_surface(BANDE)
+
+ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png") #Bande muss Linie Übermalen
+ZIEL_POS = (10,200)
+ZIEL_LINIE_MASKE = pygame.mask.from_surface(ZIEL_LINIE)
+
+FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.05)
+PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.07)
 
 
-
-###########
-# Klassen
-###########
-
-class AbstractCar: #Generell Auto Klasse (Namen muss geändert werden)      
+############################
+# Abstraktklasse definieren
+#############################
+# Wird benötigt, um generelle Eigenschaften von Autos dem Spieler-, als auch dem Gegnerauto zuzuweisen. Da diese aber andere Eigenschaften haben, sind diese in den jeweiligen Klassen definiert
+class AbstractCar: #Generell Auto Klasse       
 #Klassen sind wie Eigenschaften für eine bestimmte Sache. Sachen können mehrere Klassen besitzen und Klassen können ineinander vererbt werden (siehe class SpielerAuto)
    
      def __init__(self, max_v, rotations_v): #self verweist auf sich selber, der rest sind standard Abhängigkeiten wie von Funktionen gewöhnt
