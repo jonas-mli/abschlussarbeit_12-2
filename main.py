@@ -9,7 +9,7 @@
 
 import pygame
 from sound import *
-from werkzeuge import *
+from funktionen import * 
 
 ###########################################
 # Fenster & Texturen als Konstanten laden
@@ -27,13 +27,27 @@ pygame.init()
 pygame.mixer.init()
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
 
-#########################
-# Autoklasse definieren
-#########################
+##########################
+# Autoklassen definieren
+##########################
    
-class SpielerAuto(AbstractCar): #Attribute für Spielerauto
+class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
      AUTOBILD = PORSCHE
      START_POS = (40, 120)
+
+class Gegner(AbstraktAuto):
+     AUTOBILD = FERRARI
+     START_POS = (50, 120)
+
+     def __init__(self, max_v, rotations_v, weg=[]):
+          super().__init__(max_v, rotations_v) #Nutzt Eigenschaften von __init__ von der Abstrakten Autoklasse
+          self.weg = weg
+          self.wp = 0 #wp = Wegpunkt
+          self.v = max_v
+
+     def zei_wp(self, fenster):
+          for p in self.weg:
+               pygame.draw.circle(fenster, rot, p, 5) #(fenster,farbe,koordinaten/mitte, radius)
 
      
 #############
