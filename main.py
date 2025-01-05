@@ -30,7 +30,16 @@ pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfensterti
 ##########################
 # Autoklassen definieren
 ##########################
-   
+
+def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
+     for x, pos in bilder:
+          n_pos = [pos[p]-kam_offs[p] for p in range(2)] #neue position
+          gui.blit(x, n_pos)
+     spieler_auto.zei(gui)
+
+     pygame.display.flip() # Aktualisiert Bildschirm
+
+
 class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
      AUTOBILD = PORSCHE
      START_POS = (50, 120)
@@ -180,8 +189,9 @@ while aktiv:
           clock.tick(FPS)  # Clock begrenzt den Loop
           pygame.display.set_caption("KGS Turismo - Spiel")
 
-          kam_offs_x = BREITE // 2 
-          kam_offs_y = HOEHE // 2 
+          kam_offs_x = spieler_auto.x - (BREITE // 2) #Kamera offset von x
+          kam_offs_y = spieler_auto.y - (HOEHE // 2)
+          kam_offs = (kam_offs_x, kam_offs_y)  
 
           zei(GUI, bilder, spieler_auto) # Zeichne(GUI, bilder, auto,)
           tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)

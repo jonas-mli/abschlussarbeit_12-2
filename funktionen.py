@@ -98,11 +98,6 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 #    pygame.draw.circle(gui, rahmen_f, (pos_x, pos_y), radius, 4)       
     gui.blit(text, (pos_x - text.get_width() // 2, pos_y - text.get_height() // 2))
 
-def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
-     for x, pos in bilder:
-          gui.blit(x, pos)
-     spieler_auto.zei(gui)
-     pygame.display.update() # Aktualisiert Bildschirm
 
 
 ##############
