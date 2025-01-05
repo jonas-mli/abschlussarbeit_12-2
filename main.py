@@ -33,7 +33,11 @@ pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfensterti
    
 class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
      AUTOBILD = PORSCHE
-     START_POS = (40, 120)
+     START_POS = (50, 120)
+     
+     def __init__(self,max_v,rotations_v):
+          super().__init__(max_v, rotations_v)
+          self.rect = self.bild.get_rect()
 
 class Gegner(AbstraktAuto):
      AUTOBILD = FERRARI
@@ -44,6 +48,7 @@ class Gegner(AbstraktAuto):
           self.weg = weg
           self.wp = 0 #wp = Wegpunkt
           self.v = max_v
+          
 
      def zei_wp(self, fenster):
           for p in self.weg:
@@ -167,10 +172,17 @@ pygame.display.update()
 
 musik_spielen(spiel_musik)
 
+kam_offs_x = 0 #Kamera offset von x
+kam_offs_y = 0 #Kamera offset von y 
+
 while aktiv:   
      if not pausiert: #aktives spiel   
           clock.tick(FPS)  # Clock begrenzt den Loop
           pygame.display.set_caption("KGS Turismo - Spiel")
+
+          kam_offs_x = BREITE // 2 
+          kam_offs_y = HOEHE // 2 
+
           zei(GUI, bilder, spieler_auto) # Zeichne(GUI, bilder, auto,)
           tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)
           pygame.display.update()

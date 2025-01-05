@@ -113,7 +113,7 @@ STRECKE = pygame.image.load("Texturen/Strecke.png")
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
-BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), .95)
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 1.84)
 BANDE_MASKE = pygame.mask.from_surface(BANDE)
 
 ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png") #Bande muss Linie Übermalen
