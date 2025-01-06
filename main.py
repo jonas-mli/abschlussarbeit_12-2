@@ -88,7 +88,8 @@ def hauptmenu():
      while m_aktiv:
           clock.tick(FPS)
           #GUI.fill(dunkelblau)
-          grau_farbverlauf(GUI, BREITE, HOEHE)
+          GUI.blit(HINTERGRUND_HAUPTMENU,(0,-75))
+
 
           pygame.draw.rect(GUI, weiss, button_start_rect)
           pygame.draw.rect(GUI, weiss, button_stop_rect)
