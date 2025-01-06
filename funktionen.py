@@ -100,9 +100,12 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 
 
 
-##############
+##############################################
 # zusätzliche Texturen als Konstanten laden
-##############
+##############################################
+
+OFFSET_X = 0  
+OFFSET_Y = -180
 
 STRECKE = pygame.image.load("Texturen/Strecke.png")
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
@@ -136,6 +139,7 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           self.winkel = 00
           self.x, self.y = self.START_POS
           self.beschleunigung = 0.1
+ 
 
      def rotieren(self, links = False, rechts = False):
           if links:
@@ -172,8 +176,9 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
 
      def kollidieren(self, maske, x=0, y=0):
           auto_maske = pygame.mask.from_surface(self.bild)
-          offset = (int(self.x  - x), int(self.y - y))
+          offset = (int((self.x  - x) - OFFSET_X), int((self.y - y) - OFFSET_Y))
           schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt 
+          print('kollision')
 
           return schnittP
      
