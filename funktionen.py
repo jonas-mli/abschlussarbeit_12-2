@@ -186,7 +186,7 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt 
           print('kollision')
           print(f"offset: {offset}, spieler: ({self.x}, {self.y}), hindernis: ({x}, {y})")
-
+          print(f"Hindernis-Maske: {maske.get_size()}, Offset: {offset}")
           return schnittP
      
      def rueckstoss(self):
