@@ -35,10 +35,10 @@ def bild_skalieren(bild, wert):
 def textur_kacheln(gui, textur, y_pos=0, x_pos=0): # x/y_pos ist um ggf. die Textur zu verschieben 
     # So oft zeichnen, wie es nötig ist, um die Breite des Bildschirms zu füllen
     textur_breite, textur_hoehe = textur.get_size()
-    kachel_ebene = pygame.Surface((BREITE, HOEHE))
+    kachel_ebene = pygame.Surface((BREITE*4, HOEHE*4))
 
-    for y in range(0, HOEHE + textur_hoehe + 100 , textur_hoehe):
-        for x in range(0, BREITE + textur_breite + 100, textur_breite): #+100 um überzustehen 
+    for y in range(0, HOEHE + textur_hoehe *2 , textur_hoehe):
+        for x in range(0, BREITE + textur_breite *2, textur_breite): #+100 um überzustehen 
             kachel_ebene.blit(textur, (x + x_pos, y + y_pos))
 
     return kachel_ebene 
@@ -105,15 +105,16 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 ##############################################
 
 OFFSET_X = 0  
-OFFSET_Y = -180
+OFFSET_Y = 0
 kam_offs = (0,0)
 
+ZOOM = 2.0
 
 STRECKE = pygame.image.load("Texturen/Strecke.png")
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
-BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 1.84)
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 2.32) #füroriginal 1.84
 BANDE_MASKE = pygame.mask.from_surface(BANDE)
 
 ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png") #Bande muss Linie Übermalen
@@ -151,8 +152,8 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           if rechts: 
                self.winkel -= self.rotations_v
     
-     def zei(self, gui):
-          blit_rotieren(gui, self.bild, (self.x, self.y), self.winkel)
+#     def zei(self, gui):
+#          blit_rotieren(gui, self.bild, (self.x, self.y), self.winkel)
 
      def vorwaerts_bewegen(self):
           self.v = min(self.v + self.beschleunigung, self.max_v)
@@ -180,7 +181,8 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
 
      def kollidieren(self, maske, x=0, y=0):
           auto_maske = pygame.mask.from_surface(self.bild)
-          offset = (int((self.x - x) - OFFSET_X), int((self.y - y) - OFFSET_Y))
+          offset = (int(self.x - x), int(self.y - y))
+
 
 
           schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt 

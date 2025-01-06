@@ -18,9 +18,8 @@ from funktionen import *
 # Bei Bedarf mit Funktion bild_skalieren(bild, wert) skalieren 
 
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() # Weil Spielfenster von Strecke ausgefüllt werden soll 
-GUI = pygame.display.set_mode((BREITE, HOEHE)) #Spielfenster
+GUI = pygame.display.set_mode((BREITE, HOEHE), pygame.RESIZABLE) #Spielfenster
 GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg")) #Muss gier definiert werden, weil von GUI abhängig
-
 
 
 bilder = [(GRAS, (-10 + OFFSET_X, -30 + OFFSET_Y)), 
@@ -47,17 +46,19 @@ def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilder
 
 class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
      AUTOBILD = PORSCHE
-     START_POS = (0 , 0)
+     START_POS = (100, 220) 
      
      def __init__(self,max_v,rotations_v):
-          self.start_offset_x = 0 # Ist wie START_POS (benötigt da während Programmierung der Kameraperspektive Probleme auftraten)
-          self.start_offset_y = 0 #
+          #self.start_offset_x = 0 # Ist wie START_POS (benötigt da während Programmierung der Kameraperspektive Probleme auftraten)
+          #self.start_offset_y = 0 #
           super().__init__(max_v, rotations_v)
-
+     
+     def zei(self, gui):
+          blit_rotieren(gui, self.bild, (self.x + kam_offs[0], self.y + kam_offs[1]), self.winkel)
 
 class Gegner(AbstraktAuto):
      AUTOBILD = FERRARI
-     START_POS = (10, 180)
+     #START_POS = (10, 180)
 
      def __init__(self, max_v, rotations_v, weg=[]):
           super().__init__(max_v, rotations_v) #Nutzt Eigenschaften von __init__ von der Abstrakten Autoklasse
@@ -95,7 +96,7 @@ def hauptmenu():
      while m_aktiv:
           clock.tick(FPS)
           #GUI.fill(dunkelblau)
-          GUI.blit(HINTERGRUND_HAUPTMENU,(0,-75))
+          GUI.blit(HINTERGRUND_HAUPTMENU, (0, -75))
 
 
           #pygame.draw.rect(GUI, weiss, button_start_rect)
@@ -116,6 +117,7 @@ def hauptmenu():
                     if button_start_rect.collidepoint(mouse_pos):
                          musik_spielen(spiel_musik)  
                          m_aktiv = False  
+                         GUI.fill(weiss)
                     
                     if button_stop_rect.collidepoint(mouse_pos):  
                          pygame.quit()
@@ -165,7 +167,9 @@ def pause_menu():
                          mouse_pos = pygame.mouse.get_pos()
                          if button_weiter_rect.collidepoint(mouse_pos):
                               musik_spielen(spiel_musik)
+                              GUI.fill(weiss)
                               return True  
+
                          
                          if button_hauptmenu_rect.collidepoint(mouse_pos):
                               hauptmenu()  
@@ -189,8 +193,9 @@ pygame.display.update()
 
 musik_spielen(spiel_musik)
 
-kam_offs_x = 0 #Kamera offset von x
-kam_offs_y = 0 #Kamera offset von y 
+kam_offs_x = -(spieler_auto.x - (BREITE // 2))
+kam_offs_y = -(spieler_auto.y - (HOEHE // 2))
+kam_offs = (kam_offs_x, kam_offs_y) 
 
 while aktiv:   
      if not pausiert: #aktives spiel   
@@ -203,6 +208,9 @@ while aktiv:
           kam_offs = (kam_offs_x, kam_offs_y)
 
           #print(f"X:{spieler_auto.x}, Y:{spieler_auto.y}")
+
+          auto_maske = pygame.mask.from_surface(spieler_auto.bild)
+          
 
           zei(GUI, bilder, spieler_auto) # Zeichne(GUI, bilder, auto,)
           tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)
@@ -218,17 +226,17 @@ while aktiv:
                          pausiert = True
           
           spieler_bewegen(spieler_auto)
-
+          
           if spieler_auto.kollidieren(BANDE_MASKE) != None:
                spieler_auto.rueckstoss()
-
+          """
           if spieler_auto.kollidieren(ZIEL_LINIE_MASKE, *ZIEL_POS) != None: #* spaltet Tupel in 2 individuelle Koordinaten also (ZIEL_LINIE_MASKE,x,y)
                print("finnisches Ziel")
-     
+          """     
      else: #pause situation
           fortsetzen = pause_menu()
           if fortsetzen: 
-               pausiert = False
+               pausiert = False               
           
           else:
                spieler_auto = SpielerAuto(4, 3)
