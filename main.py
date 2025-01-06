@@ -31,6 +31,7 @@ bilder = [(GRAS, (-10 + OFFSET_X, -30 + OFFSET_Y)),
 pygame.init()
 pygame.mixer.init()
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
+pygame.display.set_icon(ICON)
 
 ##########################
 # Autoklassen definieren
@@ -79,15 +80,15 @@ spiel_musik = "m.short_chiptune_loop"
 
 def hauptmenu():
      BUTTON_BREITE = 250
-     BUTTON_HOEHE = 50
+     BUTTON_HOEHE = 80
      m_aktiv = True
      pygame.display.set_caption("KGS Turismo - Hauptmenü")
 
      text1 = schrift.render("Spiel starten", True, (schwarz))
      text2 = schrift.render("Spiel beenden", True, (schwarz))
 
-     button_start_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 - 60, BUTTON_BREITE, BUTTON_HOEHE)
-     button_stop_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 20, BUTTON_BREITE, BUTTON_HOEHE)
+     button_start_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 61, BUTTON_BREITE, BUTTON_HOEHE)
+     button_stop_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 200, BUTTON_BREITE, BUTTON_HOEHE)
 
      musik_spielen(menu_musik)
 
@@ -97,11 +98,11 @@ def hauptmenu():
           GUI.blit(HINTERGRUND_HAUPTMENU,(0,-75))
 
 
-          pygame.draw.rect(GUI, weiss, button_start_rect)
-          pygame.draw.rect(GUI, weiss, button_stop_rect)
+          #pygame.draw.rect(GUI, weiss, button_start_rect)
+          #pygame.draw.rect(GUI, weiss, button_stop_rect)
 
-          GUI.blit(text1, (button_start_rect.x + button_start_rect.width // 2 - text1.get_width() // 2, button_start_rect.y + button_start_rect.height // 2 - text1.get_height() // 2))
-          GUI.blit(text2, (button_stop_rect.x + (button_stop_rect.width // 2) - text2.get_width() // 2, button_stop_rect.y + button_stop_rect.height // 2 - text2.get_height() // 2))
+          #GUI.blit(text1, (button_start_rect.x + button_start_rect.width // 2 - text1.get_width() // 2, button_start_rect.y + button_start_rect.height // 2 - text1.get_height() // 2))
+          #GUI.blit(text2, (button_stop_rect.x + (button_stop_rect.width // 2) - text2.get_width() // 2, button_stop_rect.y + button_stop_rect.height // 2 - text2.get_height() // 2))
           
           pygame.display.update()
 
@@ -129,7 +130,7 @@ schrift = pygame.font.SysFont("Arial", 40, False, False)
 
 def pause_menu():
     BUTTON_BREITE = 250
-    BUTTON_HOEHE = 50
+    BUTTON_HOEHE = 80
     pausiert = True
     pygame.display.set_caption("KGS Turismo - Pausemenü")
     
@@ -138,8 +139,8 @@ def pause_menu():
     
 
 
-    button_weiter_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 - 60, BUTTON_BREITE, BUTTON_HOEHE)
-    button_hauptmenu_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 20, BUTTON_BREITE, BUTTON_HOEHE)
+    button_weiter_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 61, BUTTON_BREITE, BUTTON_HOEHE)
+    button_hauptmenu_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 182, BUTTON_BREITE, BUTTON_HOEHE)
 
     musik_spielen(menu_musik)
 
@@ -147,11 +148,11 @@ def pause_menu():
           clock.tick(FPS)
           GUI.blit(HINTERGRUND_PAUSENMENU, (0,-75))
 
-          pygame.draw.rect(GUI, weiss, button_weiter_rect)
-          pygame.draw.rect(GUI, weiss, button_hauptmenu_rect)
+          #pygame.draw.rect(GUI, weiss, button_weiter_rect)
+          #pygame.draw.rect(GUI, weiss, button_hauptmenu_rect)
           
-          GUI.blit(text_weiter, (button_weiter_rect.x + button_weiter_rect.width // 2 - text_weiter.get_width() // 2, button_weiter_rect.y + button_weiter_rect.height // 2 - text_weiter.get_height() // 2))
-          GUI.blit(text_hauptmenu, (button_hauptmenu_rect.x + button_hauptmenu_rect.width // 2 - text_hauptmenu.get_width() // 2, button_hauptmenu_rect.y + button_hauptmenu_rect.height // 2 - text_hauptmenu.get_height() // 2))
+          #GUI.blit(text_weiter, (button_weiter_rect.x + button_weiter_rect.width // 2 - text_weiter.get_width() // 2, button_weiter_rect.y + button_weiter_rect.height // 2 - text_weiter.get_height() // 2))
+          #GUI.blit(text_hauptmenu, (button_hauptmenu_rect.x + button_hauptmenu_rect.width // 2 - text_hauptmenu.get_width() // 2, button_hauptmenu_rect.y + button_hauptmenu_rect.height // 2 - text_hauptmenu.get_height() // 2))
           
           pygame.display.update()
 
