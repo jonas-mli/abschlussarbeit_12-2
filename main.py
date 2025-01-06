@@ -201,7 +201,7 @@ while aktiv:
           kam_offs_y = -(spieler_auto.y - (HOEHE // 2))
           kam_offs = (kam_offs_x, kam_offs_y)
 
-          print(f"X:{spieler_auto.x}, Y:{spieler_auto.y}")
+          #print(f"X:{spieler_auto.x}, Y:{spieler_auto.y}")
 
           zei(GUI, bilder, spieler_auto) # Zeichne(GUI, bilder, auto,)
           tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)

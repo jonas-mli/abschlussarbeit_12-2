@@ -106,6 +106,8 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 
 OFFSET_X = 0  
 OFFSET_Y = -180
+kam_offs = (0,0)
+
 
 STRECKE = pygame.image.load("Texturen/Strecke.png")
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
@@ -176,9 +178,12 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
 
      def kollidieren(self, maske, x=0, y=0):
           auto_maske = pygame.mask.from_surface(self.bild)
-          offset = (int((self.x  - x) - OFFSET_X), int((self.y - y) - OFFSET_Y))
+          offset = (int((self.x - x) - OFFSET_X), int((self.y - y) - OFFSET_Y))
+
+
           schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt 
           print('kollision')
+          print(f"offset: {offset}, spieler: ({self.x}, {self.y}), hindernis: ({x}, {y})")
 
           return schnittP
      
