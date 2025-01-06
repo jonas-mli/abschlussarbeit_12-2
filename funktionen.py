@@ -114,7 +114,7 @@ OFFSET_X = 0
 OFFSET_Y = 0
 kam_offs = (0,0)
 
-ZOOM = 2.0
+ZOOM = 1.0
 
 STRECKE = pygame.image.load("Texturen/Strecke.png")
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt

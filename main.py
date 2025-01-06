@@ -37,10 +37,10 @@ pygame.display.set_icon(ICON)
 ##########################
 
 def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
-     for x, pos in bilder:
+     for bild, pos in bilder:
           n_pos = [pos[p] + kam_offs[p] * ZOOM for p in range(2)] #neue position
-          skaliertes_bild = pygame.transform.scale(bilder[x], (int(bilder[x].get_width() * ZOOM), int(bild.get_height() * ZOOM)))
-          gui.blit(x, n_pos)
+          skaliertes_bild = pygame.transform.scale(bild, (int(bild.get_width() * ZOOM), int(bild.get_height() * ZOOM)))
+          gui.blit(bild, n_pos)
      spieler_auto.zei(gui)
      pygame.display.update() # Aktualisiert Bildschirm
 
