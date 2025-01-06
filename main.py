@@ -38,7 +38,8 @@ pygame.display.set_icon(ICON)
 
 def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
      for x, pos in bilder:
-          n_pos = [pos[p] + kam_offs[p] for p in range(2)] #neue position
+          n_pos = [pos[p] + kam_offs[p] * ZOOM for p in range(2)] #neue position
+          skaliertes_bild = pygame.transform.scale(bilder[x], (int(bilder[x].get_width() * ZOOM), int(bild.get_height() * ZOOM)))
           gui.blit(x, n_pos)
      spieler_auto.zei(gui)
      pygame.display.update() # Aktualisiert Bildschirm
@@ -99,8 +100,8 @@ def hauptmenu():
           GUI.blit(HINTERGRUND_HAUPTMENU, (0, -75))
 
 
-          #pygame.draw.rect(GUI, weiss, button_start_rect)
-          #pygame.draw.rect(GUI, weiss, button_stop_rect)
+          pygame.draw.rect(GUI, weiss, button_start_rect)
+          pygame.draw.rect(GUI, weiss, button_stop_rect)
 
           #GUI.blit(text1, (button_start_rect.x + button_start_rect.width // 2 - text1.get_width() // 2, button_start_rect.y + button_start_rect.height // 2 - text1.get_height() // 2))
           #GUI.blit(text2, (button_stop_rect.x + (button_stop_rect.width // 2) - text2.get_width() // 2, button_stop_rect.y + button_stop_rect.height // 2 - text2.get_height() // 2))
@@ -197,14 +198,16 @@ kam_offs_x = -(spieler_auto.x - (BREITE // 2))
 kam_offs_y = -(spieler_auto.y - (HOEHE // 2))
 kam_offs = (kam_offs_x, kam_offs_y) 
 
+aktualisiere_masken()
+
 while aktiv:   
      if not pausiert: #aktives spiel   
           clock.tick(FPS)  # Clock begrenzt den Loop
           pygame.display.set_caption("KGS Turismo - Spiel")
 
           
-          kam_offs_x = -(spieler_auto.x - (BREITE // 2)) #Kamera offset von x
-          kam_offs_y = -(spieler_auto.y - (HOEHE // 2))
+          kam_offs_x = -(spieler_auto.x * ZOOM - (BREITE // 2)) #Kamera offset von x
+          kam_offs_y = -(spieler_auto.y * ZOOM - (HOEHE // 2))
           kam_offs = (kam_offs_x, kam_offs_y)
 
           #print(f"X:{spieler_auto.x}, Y:{spieler_auto.y}")
@@ -229,10 +232,22 @@ while aktiv:
           
           if spieler_auto.kollidieren(BANDE_MASKE) != None:
                spieler_auto.rueckstoss()
+
           """
           if spieler_auto.kollidieren(ZIEL_LINIE_MASKE, *ZIEL_POS) != None: #* spaltet Tupel in 2 individuelle Koordinaten also (ZIEL_LINIE_MASKE,x,y)
                print("finnisches Ziel")
           """     
+          """
+#Für Einstellungen später
+          for event in pygame.event.get():
+               if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_PLUS:  # Zoom in
+                         ZOOM *= 1.1
+                         aktualisiere_masken()
+                    elif event.key == pygame.K_MINUS:  # Zoom out
+                         ZOOM /= 1.1
+                         aktualisiere_masken()
+          """
      else: #pause situation
           fortsetzen = pause_menu()
           if fortsetzen: 

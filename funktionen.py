@@ -29,7 +29,7 @@ def blit_rotieren(gui, bild, oben_links, winkel):
     gui.blit(rotiertes_bild, neues_rechteck.topleft)
 
 def bild_skalieren(bild, wert):
-    groesse = round(bild.get_width() * wert), round(bild.get_height() * wert)
+    groesse = round(bild.get_width() * wert * ZOOM), round(bild.get_height() * wert* ZOOM)
     return pygame.transform.scale(bild, groesse)
 
 def textur_kacheln(gui, textur, y_pos=0, x_pos=0): # x/y_pos ist um ggf. die Textur zu verschieben 
@@ -59,6 +59,12 @@ def musik_spielen(song, loop=-1, lautstaerke=0.8):
         pygame.mixer.music.load(musik[song])
         pygame.mixer.music.set_volume(lautstaerke)
         pygame.mixer.music.play(loop)
+
+def aktualisiere_masken():
+    global BANDE_MASKE, ZIEL_LINIE_MASKE
+    BANDE_MASKE = pygame.mask.from_surface(bild_skalieren(BANDE, 1))
+    ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE, 1))
+
 
 def spieler_bewegen(spieler_auto):
      taste = pygame.key.get_pressed()
