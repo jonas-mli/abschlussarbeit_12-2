@@ -31,6 +31,7 @@ bilder = [(GRAS, (-10 + OFFSET_X, -30 + OFFSET_Y)),
 pygame.init()
 pygame.mixer.init()
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
+pygame.display.set_icon(ICON)
 
 ##########################
 # Autoklassen definieren
