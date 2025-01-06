@@ -21,7 +21,12 @@ BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() # Weil Spielfenster vo
 GUI = pygame.display.set_mode((BREITE, HOEHE)) #Spielfenster
 GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg")) #Muss gier definiert werden, weil von GUI abhängig
 
-bilder = [(GRAS, (-10, -30)), (STRECKE, (0, 0)), (ZIEL_LINIE, ZIEL_POS),(BANDE, (0, 0))] #(BANDE, (0, 0))Liste mit Hintergrundobjekten 
+
+
+bilder = [(GRAS, (-10 + OFFSET_X, -30 + OFFSET_Y)), 
+          (STRECKE, (0 + OFFSET_X, 0 + OFFSET_Y)),
+          (ZIEL_LINIE, (ZIEL_POS[0] + OFFSET_X, ZIEL_POS[1] + OFFSET_Y)),
+          (BANDE, (0 + OFFSET_X, 0 + OFFSET_Y))] #Liste mit Hintergrundobjekten 
 
 pygame.init()
 pygame.mixer.init()
@@ -33,24 +38,25 @@ pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfensterti
 
 def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
      for x, pos in bilder:
-          n_pos = [pos[p]-kam_offs[p] for p in range(2)] #neue position
+          n_pos = [pos[p] + kam_offs[p] for p in range(2)] #neue position
           gui.blit(x, n_pos)
      spieler_auto.zei(gui)
-
-     pygame.display.flip() # Aktualisiert Bildschirm
+     pygame.display.update() # Aktualisiert Bildschirm
 
 
 class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
      AUTOBILD = PORSCHE
-     START_POS = (50, 120)
+     START_POS = (0 , 0)
      
      def __init__(self,max_v,rotations_v):
+          self.start_offset_x = 0 # Ist wie START_POS (benötigt da während Programmierung der Kameraperspektive Probleme auftraten)
+          self.start_offset_y = 0 #
           super().__init__(max_v, rotations_v)
-          self.rect = self.bild.get_rect()
+
 
 class Gegner(AbstraktAuto):
      AUTOBILD = FERRARI
-     START_POS = (50, 120)
+     START_POS = (10, 180)
 
      def __init__(self, max_v, rotations_v, weg=[]):
           super().__init__(max_v, rotations_v) #Nutzt Eigenschaften von __init__ von der Abstrakten Autoklasse
@@ -189,9 +195,12 @@ while aktiv:
           clock.tick(FPS)  # Clock begrenzt den Loop
           pygame.display.set_caption("KGS Turismo - Spiel")
 
-          kam_offs_x = spieler_auto.x - (BREITE // 2) #Kamera offset von x
-          kam_offs_y = spieler_auto.y - (HOEHE // 2)
-          kam_offs = (kam_offs_x, kam_offs_y)  
+          
+          kam_offs_x = -(spieler_auto.x - (BREITE // 2)) #Kamera offset von x
+          kam_offs_y = -(spieler_auto.y - (HOEHE // 2))
+          kam_offs = (kam_offs_x, kam_offs_y)
+
+          print(f"X:{spieler_auto.x}, Y:{spieler_auto.y}")
 
           zei(GUI, bilder, spieler_auto) # Zeichne(GUI, bilder, auto,)
           tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)
@@ -208,7 +217,7 @@ while aktiv:
           
           spieler_bewegen(spieler_auto)
 
-          if spieler_auto.kollidieren(BANDE_MASKE,) != None:
+          if spieler_auto.kollidieren(BANDE_MASKE) != None:
                spieler_auto.rueckstoss()
 
           if spieler_auto.kollidieren(ZIEL_LINIE_MASKE, *ZIEL_POS) != None: #* spaltet Tupel in 2 individuelle Koordinaten also (ZIEL_LINIE_MASKE,x,y)
