@@ -131,7 +131,7 @@ def pause_menu():
     BUTTON_BREITE = 250
     BUTTON_HOEHE = 50
     pausiert = True
-    pygame.display.set_caption("KGS Turismo - Pause")
+    pygame.display.set_caption("KGS Turismo - Pausemenü")
     
     text_weiter = schrift.render("Weiter", True, (0, 0, 0))
     text_hauptmenu = schrift.render("Hauptmenü", True, (0, 0, 0))
@@ -145,7 +145,7 @@ def pause_menu():
 
     while True:
           clock.tick(FPS)
-          grau_farbverlauf(GUI, BREITE, HOEHE)
+          GUI.blit(HINTERGRUND_PAUSENMENU, (0,-75))
 
           pygame.draw.rect(GUI, weiss, button_weiter_rect)
           pygame.draw.rect(GUI, weiss, button_hauptmenu_rect)

@@ -123,6 +123,8 @@ PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.07)
 
 HINTERGRUND_HAUPTMENU = pygame.image.load("Texturen/Hauptmenü.png")
 
+HINTERGRUND_PAUSENMENU = pygame.image.load("Texturen/Pausenmenü.png")
+
 
 ############################
 # Abstraktklasse definieren
