@@ -125,17 +125,17 @@ BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
 BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 2.32) #füroriginal 1.84
-BANDE_MASKE = pygame.mask.from_surface(BANDE)
+BANDE_MASKE = pygame.mask.from_surface(bild_skalieren(BANDE,ZOOM))
 
 ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png") #Bande muss Linie Übermalen
 ZIEL_POS = (10,200)
-ZIEL_LINIE_MASKE = pygame.mask.from_surface(ZIEL_LINIE)
+ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE,ZOOM))
 
 FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.05)
 PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.05)
 
-HINTERGRUND_HAUPTMENU = pygame.image.load("Texturen/Hauptmenü.png")
-HINTERGRUND_PAUSENMENU = pygame.image.load("Texturen/Pausenmenü.png")
+HINTERGRUND_HAUPTMENU = bild_skalieren(bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),0.82), ZOOM)
+HINTERGRUND_PAUSENMENU = bild_skalieren(pygame.image.load("Texturen/Pausenmenü.png"), ZOOM)
 
 ICON = pygame.image.load("Texturen/Icon.png")
 

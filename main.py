@@ -1,6 +1,6 @@
 ##########################################
 # Informatik Abschlussarbeit KGS Turismo
-# Stand: 29.12.2024 13:51 Uhr
+# Stand: 10.1.2025 11:05 Uhr
 ##########################################
 
 ################
@@ -16,9 +16,13 @@ from funktionen import *
 ###########################################
 # Texturenpfade als Konstanten definieren (CAPS weil Konstante)
 # Bei Bedarf mit Funktion bild_skalieren(bild, wert) skalieren 
+pygame.init()
+pygame.mixer.init()
+pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
+pygame.display.set_icon(ICON)
 
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() # Weil Spielfenster von Strecke ausgefüllt werden soll 
-GUI = pygame.display.set_mode((BREITE, HOEHE), pygame.RESIZABLE) #Spielfenster
+GUI = pygame.display.set_mode((BREITE, HOEHE), pygame.FULLSCREEN) #Spielfenster
 GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg")) #Muss gier definiert werden, weil von GUI abhängig
 
 
@@ -33,10 +37,7 @@ zoom_skalieren(bilder, ZOOM) #Neue Liste heisst bilder_s
 
 print(bilder_s)
 
-pygame.init()
-pygame.mixer.init()
-pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
-pygame.display.set_icon(ICON)
+
 
 ##########################
 # Autoklassen definieren
@@ -45,7 +46,6 @@ pygame.display.set_icon(ICON)
 def zei(gui, bilder_s, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
      for bild, pos in bilder_s:
           n_pos = [pos[p] + kam_offs[p] for p in range(2)] #neue position
-          skaliertes_bild = pygame.transform.scale(bild, (int(bild.get_width()), int(bild.get_height())))
           gui.blit(bild, n_pos)
      spieler_auto.zei(gui)
      pygame.display.update() # Aktualisiert Bildschirm
@@ -78,7 +78,7 @@ class Gegner(AbstraktAuto):
           for p in self.weg:
                pygame.draw.circle(fenster, rot, p, 5) #(fenster,farbe,koordinaten/mitte, radius)
 
-     
+ 
 #############
 # Hauptmenü 
 #############
