@@ -29,8 +29,15 @@ def blit_rotieren(gui, bild, oben_links, winkel):
     gui.blit(rotiertes_bild, neues_rechteck.topleft)
 
 def bild_skalieren(bild, wert):
-    groesse = round(bild.get_width() * wert * ZOOM), round(bild.get_height() * wert* ZOOM)
+    groesse = round(bild.get_width() * wert), round(bild.get_height() * wert)
     return pygame.transform.scale(bild, groesse)
+
+bilder_s = []
+def zoom_skalieren(bilder, zoom):         
+     for bild, pos in bilder:
+        bild_s = bild_skalieren(bild, zoom)
+        bilder_s.append((bild_s, pos))
+     return bilder_s
 
 def textur_kacheln(gui, textur, y_pos=0, x_pos=0): # x/y_pos ist um ggf. die Textur zu verschieben 
     # So oft zeichnen, wie es nötig ist, um die Breite des Bildschirms zu füllen
@@ -106,15 +113,12 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 
 
 
-##############################################
-# zusätzliche Texturen als Konstanten laden
-##############################################
+##############
+# Konstanten 
+##############
 
-OFFSET_X = 0  
-OFFSET_Y = 0
-kam_offs = (0,0)
 
-ZOOM = 1.0
+ZOOM = 1.8
 
 STRECKE = pygame.image.load("Texturen/Strecke.png")
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
@@ -147,7 +151,7 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           self.max_v = max_v
           self.v = 0
           self.rotations_v = rotations_v
-          self.winkel = 00
+          self.winkel = 0
           self.x, self.y = self.START_POS
           self.beschleunigung = 0.1
  
@@ -189,14 +193,13 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           auto_maske = pygame.mask.from_surface(self.bild)
           offset = (int(self.x - x), int(self.y - y))
 
+          schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt
 
-
-          schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt 
-          print('kollision')
-          print(f"offset: {offset}, spieler: ({self.x}, {self.y}), hindernis: ({x}, {y})")
-          print(f"Hindernis-Maske: {maske.get_size()}, Offset: {offset}")
-          return schnittP
-     
+#          print('kollision')
+#          print(f"offset: {offset}, spieler: ({self.x}, {self.y}), hindernis: ({x}, {y})")
+#          print(f"Hindernis-Maske: {maske.get_size()}, Offset: {offset}")          
+          return schnittP 
+          
      def rueckstoss(self):
           self.v = -self.v
           self.bewegen()

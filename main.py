@@ -22,10 +22,16 @@ GUI = pygame.display.set_mode((BREITE, HOEHE), pygame.RESIZABLE) #Spielfenster
 GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg")) #Muss gier definiert werden, weil von GUI abhängig
 
 
-bilder = [(GRAS, (-10 + OFFSET_X, -30 + OFFSET_Y)), 
-          (STRECKE, (0 + OFFSET_X, 0 + OFFSET_Y)),
-          (ZIEL_LINIE, (ZIEL_POS[0] + OFFSET_X, ZIEL_POS[1] + OFFSET_Y)),
-          (BANDE, (0 + OFFSET_X, 0 + OFFSET_Y))] #Liste mit Hintergrundobjekten 
+bilder = [(GRAS, (-10, -30)), 
+          (STRECKE, (0, 0)),
+          (ZIEL_LINIE, (ZIEL_POS[0], ZIEL_POS[1])),
+          (BANDE, (0, 0))] #Liste mit Hintergrundobjekten 
+
+
+
+zoom_skalieren(bilder, ZOOM) #Neue Liste heisst bilder_s
+
+print(bilder_s)
 
 pygame.init()
 pygame.mixer.init()
@@ -36,10 +42,10 @@ pygame.display.set_icon(ICON)
 # Autoklassen definieren
 ##########################
 
-def zei(gui, bilder, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
-     for bild, pos in bilder:
-          n_pos = [pos[p] + kam_offs[p] * ZOOM for p in range(2)] #neue position
-          skaliertes_bild = pygame.transform.scale(bild, (int(bild.get_width() * ZOOM), int(bild.get_height() * ZOOM)))
+def zei(gui, bilder_s, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
+     for bild, pos in bilder_s:
+          n_pos = [pos[p] + kam_offs[p] for p in range(2)] #neue position
+          skaliertes_bild = pygame.transform.scale(bild, (int(bild.get_width()), int(bild.get_height())))
           gui.blit(bild, n_pos)
      spieler_auto.zei(gui)
      pygame.display.update() # Aktualisiert Bildschirm
@@ -206,8 +212,8 @@ while aktiv:
           pygame.display.set_caption("KGS Turismo - Spiel")
 
           
-          kam_offs_x = -(spieler_auto.x * ZOOM - (BREITE // 2)) #Kamera offset von x
-          kam_offs_y = -(spieler_auto.y * ZOOM - (HOEHE // 2))
+          kam_offs_x = -(spieler_auto.x - (BREITE // 2)) #Kamera offset von x
+          kam_offs_y = -(spieler_auto.y - (HOEHE // 2))
           kam_offs = (kam_offs_x, kam_offs_y)
 
           #print(f"X:{spieler_auto.x}, Y:{spieler_auto.y}")
@@ -215,7 +221,7 @@ while aktiv:
           auto_maske = pygame.mask.from_surface(spieler_auto.bild)
           
 
-          zei(GUI, bilder, spieler_auto) # Zeichne(GUI, bilder, auto,)
+          zei(GUI, bilder_s, spieler_auto) # Zeichne(GUI, bilder, auto,)
           tacho(GUI, BREITE - 100, HOEHE - 20, spieler_auto)
           pygame.display.update()
 
@@ -241,10 +247,10 @@ while aktiv:
 #Für Einstellungen später
           for event in pygame.event.get():
                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_PLUS:  # Zoom in
+                    if event.key == pygame.K_PLUS:  
                          ZOOM *= 1.1
                          aktualisiere_masken()
-                    elif event.key == pygame.K_MINUS:  # Zoom out
+                    elif event.key == pygame.K_MINUS:  
                          ZOOM /= 1.1
                          aktualisiere_masken()
           """
