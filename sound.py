@@ -22,7 +22,12 @@ sfx = {
 #########
 # Musik
 #########
+
+
+
+
 musik = {
+    "menu.musik1":"Sounds/musik/menu.mp3",
     "m.8bit_bach":"Sounds/musik/8bit_bach.mp3",
     "m.8bit_mondlicht_sonate":"Sounds/musik/8bit_mondlicht_sonate.mp3",
     "m.8bit_mix":"Sounds/musik/8bit_mix.mp3",

@@ -60,7 +60,7 @@ def sfx_spielen(effekt):
      if effekt in sfx:
           sfx[effekt].play()
 
-def musik_spielen(song, loop=-1, lautstaerke=0.8):
+def musik_spielen(song, loop=-1, lautstaerke=0.75):
     if song in musik:
         pygame.mixer.music.stop()
         pygame.mixer.music.load(musik[song])
@@ -103,7 +103,7 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 #    radius = 60
 
     text_f = (weiss)
-    kmh = abs(int(spieler_auto.v * 31))
+    kmh = abs(int(spieler_auto.v * 12))
     schrift = pygame.font.SysFont("Arial", 24, True)
     text = schrift.render(f"{kmh} km/h", True, text_f)
 
@@ -118,24 +118,24 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 ##############
 
 
-ZOOM = 1.8
+ZOOM = 4
 
 STRECKE = pygame.image.load("Texturen/Strecke.png")
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
-BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 2.32) #füroriginal 1.84
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 2.316) #füroriginal 1.84
 BANDE_MASKE = pygame.mask.from_surface(bild_skalieren(BANDE,ZOOM))
 
-ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png") #Bande muss Linie Übermalen
-ZIEL_POS = (10,200)
+ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 0.8) #Bande muss Linie Übermalen
+ZIEL_POS = (230,1100)
 ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE,ZOOM))
 
 FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.05)
-PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.05)
+PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.1)
 
-HINTERGRUND_HAUPTMENU = bild_skalieren(bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),0.82), ZOOM)
-HINTERGRUND_PAUSENMENU = bild_skalieren(pygame.image.load("Texturen/Pausenmenü.png"), ZOOM)
+HINTERGRUND_HAUPTMENU = bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),1.245)
+HINTERGRUND_PAUSENMENU = bild_skalieren(pygame.image.load("Texturen/Pausenmenü.png"), 1.245)
 
 ICON = pygame.image.load("Texturen/Icon.png")
 
@@ -153,7 +153,7 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           self.rotations_v = rotations_v
           self.winkel = 0
           self.x, self.y = self.START_POS
-          self.beschleunigung = 0.1
+          self.beschleunigung = 0.3
  
 
      def rotieren(self, links = False, rechts = False):
@@ -162,8 +162,8 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           if rechts: 
                self.winkel -= self.rotations_v
     
-#     def zei(self, gui):
-#          blit_rotieren(gui, self.bild, (self.x, self.y), self.winkel)
+     def zei(self, gui):
+          blit_rotieren(gui, self.bild, (self.x, self.y), self.winkel)
 
      def vorwaerts_bewegen(self):
           self.v = min(self.v + self.beschleunigung, self.max_v)
@@ -186,7 +186,7 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           self.x -= horizontale
      
      def reibung(self):
-          self.v = max(self.v - self.beschleunigung / 1.2, 0)
+          self.v = max(self.v - self.beschleunigung / 1.001, 0)
           self.bewegen()
 
      def kollidieren(self, maske, x=0, y=0):
@@ -201,5 +201,9 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           return schnittP 
           
      def rueckstoss(self):
-          self.v = -self.v
+          self.v = - 0.6* self.v
           self.bewegen()
+
+     def ziel(self):
+          self.x, self.y = self.START_POS
+          self.winkel = 0
