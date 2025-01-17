@@ -49,7 +49,7 @@ def zei(gui, bilder_s, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bild
      spieler_auto.zei(gui)
 #     gegner_auto.zei(gui)
 
-     rundenzeit_text = arial.render(f"Rundenzeit: Placeholder", 1, weiss)
+     rundenzeit_text = arial.render(f"Rundenzeit: {spieler_auto.timer()}", 1, weiss)
      GUI.blit(rundenzeit_text, (600, HOEHE - rundenzeit_text.get_height()) )
 
      pygame.display.update() # Aktualisiert Bildschirm
