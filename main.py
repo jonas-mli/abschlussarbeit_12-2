@@ -16,8 +16,6 @@ from funktionen import *
 ###########################################
 # Texturenpfade als Konstanten definieren (CAPS weil Konstante)
 # Bei Bedarf mit Funktion bild_skalieren(bild, wert) skalieren 
-pygame.init()
-pygame.mixer.init()
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
 pygame.display.set_icon(ICON)
 
@@ -51,8 +49,8 @@ def zei(gui, bilder_s, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bild
      spieler_auto.zei(gui)
 #     gegner_auto.zei(gui)
 
-     rundenzeit_text = schrift.render(f"Rundenzeit: Placeholder", 1, schwarz)
-#     GUI.blit(rundenzeit_text, )
+     rundenzeit_text = arial.render(f"Rundenzeit: {spieler_auto.timer()}", 1, weiss)
+     GUI.blit(rundenzeit_text, (600, HOEHE - rundenzeit_text.get_height()) )
 
      pygame.display.update() # Aktualisiert Bildschirm
 
@@ -112,8 +110,8 @@ def hauptmenu():
      m_aktiv = True
      pygame.display.set_caption("KGS Turismo - Hauptmenü")
 
-     text1 = schrift.render("Spiel starten", True, (schwarz))
-     text2 = schrift.render("Spiel beenden", True, (schwarz))
+     text1 = arial.render("Spiel starten", True, (schwarz))
+     text2 = arial.render("Spiel beenden", True, (schwarz))
 
      button_start_rect = pygame.Rect(BREITE // 2 - (BUTTON_BREITE + 30) // 2, (HOEHE + 20) // 2 + 80, BUTTON_BREITE + 40, BUTTON_HOEHE + 30) #(pos x, posy, breite, Hoehe)
      button_stop_rect = pygame.Rect(BREITE // 2 - BUTTON_BREITE // 2, HOEHE // 2 + 250, BUTTON_BREITE, BUTTON_HOEHE)
@@ -162,7 +160,7 @@ def hauptmenu():
 #Pausenmenü
 ############
 
-schrift = pygame.font.SysFont("Arial", 40, False, False)
+
 
 def pause_menu():
     BUTTON_BREITE = 250

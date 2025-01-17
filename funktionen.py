@@ -8,6 +8,14 @@ import math
 from sound import musik, sfx
 
 
+##################
+# initialisieren
+##################
+
+pygame.init()
+pygame.mixer.init()
+
+
 ##########
 # Farben
 ##########
@@ -18,6 +26,13 @@ dunkelgrau = 30, 30, 30
 rot = 200, 0, 0
 dunkelblau = 0, 30, 80
 
+
+################
+# Schriftarten
+################
+
+arial = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 45)
+schrift = pygame.font.SysFont("Arial", 40, False, False)
 
 ##############
 # Funktionen
@@ -104,8 +119,8 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 
     text_f = (weiss)
     kmh = abs(int(spieler_auto.v * 12))
-    schrift = pygame.font.SysFont("Arial", 24, True)
-    text = schrift.render(f"{kmh} km/h", True, text_f)
+
+    text = arial.render(f"{kmh} km/h", True, text_f)
 
 #    pygame.draw.rect(gui, hintergrund_f, (pos_x, pos_y))  
 #    pygame.draw.circle(gui, rahmen_f, (pos_x, pos_y), radius, 4)       
