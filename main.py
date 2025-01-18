@@ -17,6 +17,7 @@ from funktionen import *
 ###########################################
 # Texturenpfade als Konstanten definieren (CAPS weil Konstante)
 # Bei Bedarf mit Funktion bild_skalieren(bild, wert) skalieren 
+
 pygame.display.set_caption("KGS Turismo - Hauptmenü") # Gibt den Spielfenstertitel an
 pygame.display.set_icon(ICON)
 
@@ -30,13 +31,8 @@ bilder = [(GRAS, (-1000, -300)),
           (STRECKE, (0, 0)),
           (ZIEL_LINIE, (ZIEL_POS[0], ZIEL_POS[1])),
           (BANDE, (0, 0))] #Liste mit Hintergrundobjekten 
-
-
-
 zoom_skalieren(bilder, zoom) #Neue Liste heisst bilder_s
-
 print(bilder_s)
-
 
 
 ##########################
@@ -45,8 +41,8 @@ print(bilder_s)
 
 def zei(gui, bilder_s, spieler_auto): #Zei = Kurzform für Zeichnen (ebene, bilderliste, spielerauto)
      for bild, pos in bilder_s:
-          n_pos = [pos[p] + kam_offs[p] for p in range(2)] #neue position
-          gui.blit(bild, n_pos)
+          n_pos = [pos[p] + kam_offs[p] for p in range(2)] #neue position #n_pos = [pos[p] + kam_offs[p] for p in range(2)]
+          gui.blit(bild,n_pos) #
      spieler_auto.zei(gui)
      gegner_auto.zei(gui)
 
@@ -68,7 +64,7 @@ class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
           self.moving = False
      
      def zei(self, gui):
-          blit_rotieren(gui, self.bild, (self.x + kam_offs[0], self.y + kam_offs[1]), self.winkel)
+          blit_rotieren(gui, self.bild, (self.x + kam_offs[0], self.y + kam_offs[1]), self.winkel) #blit_rotieren(gui, self.bild, (self.x + kam_offs[0], self.y + kam_offs[1]), self.winkel)
   
      def vorwaerts_bewegen(self):
           if not pygame.mixer.Channel(0).get_busy():
@@ -86,7 +82,7 @@ class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
 
 class Gegner(AbstraktAuto):
      AUTOBILD = FERRARI
-     START_POS = (10, 180)
+     START_POS = (360, 400)
 
      def __init__(self, max_v, rotations_v, weg=[]):
           super().__init__(max_v, rotations_v) #Nutzt Eigenschaften von __init__ von der Abstrakten Autoklasse
@@ -97,12 +93,52 @@ class Gegner(AbstraktAuto):
 
      def zei_wp(self, fenster):
           for p in self.weg:
-               punkte_neu = (p[0]+ kam_offs_x, )
+#               punkt_x = p[0] - kam_offs[0]
+#               punkt_y = p[1] - kam_offs[1]
+#               punkte_neu = (punkt_x, punkt_y)
                pygame.draw.circle(fenster, rot, p, 5) #(fenster,farbe,koordinaten/mitte, radius)
 
      def zei(self, gui):
           super().zei(gui)
           self.zei_wp(gui)
+     
+     def winkel_berechnen(self):
+          naechster_p_x, naechster_p_y = self.weg[self.wp]
+          x_diff = naechster_p_x - self.x
+          y_diff = naechster_p_y - self.y
+
+          if y_diff == 0: 
+               ziel_rad_winkel = math.pi/2 
+          else: 
+               ziel_rad_winkel = math.atan(x_diff/y_diff)
+
+          if naechster_p_y > self.y:
+               ziel_rad_winkel  += math.pi
+
+          delta_winkel = self.winkel - math.degrees(ziel_rad_winkel)
+          if delta_winkel >= 180:
+               delta_winkel -= 360
+          
+          if delta_winkel > 0:
+               self.winkel -= min(self.rotations_v, abs(delta_winkel))
+          
+          else: 
+               self.winkel += min(self.rotations_v, abs(delta_winkel))
+               
+     def naechster_wegpunkt(self):
+          ziel_p = self.weg[self.wp]
+          rect = pygame.Rect(self.x, self.y, self.bild.get_width(), self.bild.get_height())
+          
+          if rect.collidepoint(*ziel_p):
+               self.wp += 1
+
+     def bewegen(self):
+          if self.wp >= len(self.weg):
+               return
+          
+          self.winkel_berechnen()
+          self.naechster_wegpunkt()
+          super().bewegen()
  
 #############
 # Hauptmenü 
@@ -334,9 +370,10 @@ def e_menu(menu):
 ##############
 
 FPS = 60
+WEG = [(91, 245), (79, 123), (97, 79), (161, 103), (454, 288), (525, 310), (538, 256), (463, 130), (455, 84), (509, 72), (715, 56), (759, 88), (758, 152), (833, 158), (947, 128), (1081, 73), (1148, 111), (1337, 84), (1540, 70), (1574, 227), (1561, 286), (1464, 336), (1370, 343), (1174, 241), (1062, 228), (789, 280), (722, 305), (762, 349), (865, 390), (982, 415), (1074, 429), (1511, 472), (1563, 486), (1570, 518), (1556, 641), (1526, 677), (1480, 706), (1395, 718), (1079, 707), (949, 679), (717, 532), (633, 497), (563, 524), (498, 610), (429, 677), (357, 731), (269, 770), (201, 743), (168, 683), (142, 606), (124, 501), (116, 459), (113, 414), (100, 328)]
 allg = Allg()
 spieler_auto = SpielerAuto(26,8) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
-gegner_auto = Gegner(6, 4)
+gegner_auto = Gegner(6, 4, WEG)
 aktiv = True 
 pausiert = False
 clock = pygame.time.Clock() #Zum Regeln der Spielgeschwindigkeit
@@ -389,11 +426,15 @@ while aktiv:
                          pausiert = True
           
           spieler_bewegen(spieler_auto)
+          gegner_auto.bewegen()
           
           if spieler_auto.kollidieren(BANDE_MASKE) != None:
                spieler_auto.rueckstoss()
 
-          
+          gegner_schnittP = gegner_auto.kollidieren(ZIEL_LINIE_MASKE, *ZIEL_POS)
+          if gegner_auto != None:
+               print("Gegner gewinnt")
+
           ziel_schnittP = spieler_auto.kollidieren(ZIEL_LINIE_MASKE, *ZIEL_POS)
           if ziel_schnittP != None: #* spaltet Tupel in 2 individuelle Koordinaten also (ZIEL_LINIE_MASKE,x,y)
                rundenzeit_text = monogram.render(f"{rundenzeit /1000:.2f}", True, rot)

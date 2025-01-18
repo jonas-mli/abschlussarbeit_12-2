@@ -139,7 +139,7 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 # Konstanten 
 ##############
 
-zoom = 0.5
+zoom = 1
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() ## Weil Spielfenster von Strecke ausgefüllt werden soll wegen circular import doppelt
@@ -151,7 +151,7 @@ ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 0.2 * 
 ZIEL_POS = (230,1100)
 ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE,zoom))
 
-FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.005 * zoom)
+FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.01 * zoom)
 PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.03 * zoom)
 
 HINTERGRUND_HAUPTMENU = bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),1.28)
