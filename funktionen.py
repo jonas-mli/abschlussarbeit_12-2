@@ -25,14 +25,18 @@ weiss = 255, 255, 255
 dunkelgrau = 30, 30, 30
 rot = 200, 0, 0
 dunkelblau = 0, 30, 80
+menü_grün = 0, 80, 50
 
 
 ################
 # Schriftarten
 ################
 
-arial = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 45)
-schrift = pygame.font.SysFont("Arial", 40, False, False)
+monogram = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 45)
+schrift = pygame.font.SysFont("monogram", 40, False, False)
+tacho_schrift = pygame.font.Font("Texturen/fonts/7Segment/dseg7-regular-normal.ttf", 45)
+rundenzeit_schrift = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 60)
+
 
 ##############
 # Funktionen
@@ -75,7 +79,7 @@ def sfx_spielen(effekt):
      if effekt in sfx:
           sfx[effekt].play()
 
-def musik_spielen(song, loop=-1, lautstaerke=0.75):
+def musik_spielen(song, loop=-1, lautstaerke=0.8):
     if song in musik:
         pygame.mixer.music.stop()
         pygame.mixer.music.load(musik[song])
@@ -106,6 +110,9 @@ def spieler_bewegen(spieler_auto):
           bewegt = True
           spieler_auto.rueckwarts_bewegen()
 
+#     if bewegt == True:
+#          sfx_spielen("s.car_engine")
+
      if spieler_auto.v > 0 and taste[pygame.K_s]:
           spieler_auto.bremsen()
 
@@ -120,7 +127,7 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
     text_f = (weiss)
     kmh = abs(int(spieler_auto.v * 12))
 
-    text = arial.render(f"{kmh} km/h", True, text_f)
+    text = monogram.render(f"{kmh} km/h", True, text_f)
 
 #    pygame.draw.rect(gui, hintergrund_f, (pos_x, pos_y))  
 #    pygame.draw.circle(gui, rahmen_f, (pos_x, pos_y), radius, 4)       
@@ -132,25 +139,24 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 # Konstanten 
 ##############
 
-
-ZOOM = 4
-
-STRECKE = pygame.image.load("Texturen/Strecke.png")
-BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() #wegen circular import doppelt
+zoom = 0.5
 
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
-BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 2.316) #füroriginal 1.84
-BANDE_MASKE = pygame.mask.from_surface(bild_skalieren(BANDE,ZOOM))
+BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() ## Weil Spielfenster von Strecke ausgefüllt werden soll wegen circular import doppelt
 
-ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 0.8) #Bande muss Linie Übermalen
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 0.9777) #füroriginal 1.84
+BANDE_MASKE = pygame.mask.from_surface(bild_skalieren(BANDE,zoom))
+
+ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 0.2 * zoom) #Bande muss Linie Übermalen
 ZIEL_POS = (230,1100)
-ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE,ZOOM))
+ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE,zoom))
 
-FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.05)
-PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.1)
+FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.005 * zoom)
+PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.03 * zoom)
 
-HINTERGRUND_HAUPTMENU = bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),1.245)
-HINTERGRUND_PAUSENMENU = bild_skalieren(pygame.image.load("Texturen/Pausenmenü.png"), 1.245)
+HINTERGRUND_HAUPTMENU = bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),1.28)
+HINTERGRUND_PAUSENMENU = bild_skalieren(pygame.image.load("Texturen/Pausenmenü.png"), 1.28)
+HINTERGRUND_EINSTELLUNGSMENU = bild_skalieren(pygame.image.load("Texturen/Einstellungsmenü.png"),1.28)
 
 ICON = pygame.image.load("Texturen/Icon.png")
 
@@ -222,3 +228,46 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
      def ziel(self):
           self.x, self.y = self.START_POS
           self.winkel = 0
+
+class Allg:
+     """= Allgemein für alle generelle funktionen des spiels wie bspw. der Rundentimer"""
+     
+     def __init__(self):
+          # alles für rundentimer
+          self.rundenstart = pygame.time.get_ticks()
+          self.pausenstart = 0
+          self.rundenzeit = 0 
+          self.pausenzeit = 0
+          self.gestartet = False 
+          # alles für slider
+          self.zoom = zoom
+          self.lautstaerke = 0.8
+#          self.lautstaerke = pygame.mixer.music.get_volume()
+          self.slider_zoom = self.Slider(BREITE // 2 - 150, 500, 300, 1, 5, self.zoom)
+          self.slider_lautstaerke = self.Slider(BREITE // 2 - 150, 700, 300, 0, 1, self.lautstaerke)
+
+          
+     class Slider:
+        def __init__(self, x, y,breite, min_wert, max_wert, start_wert):
+            self.rect = pygame.Rect(x, y, breite, 20)  #für hintergrund
+            self.knopf = pygame.Rect(x, y - 5, 10, 30)  # knopf
+            self.min_wert = min_wert
+            self.max_wert = max_wert
+            self.wert = start_wert
+            self.breite = breite
+            self.knopf.centerx = x + int((start_wert - min_wert) / (max_wert - min_wert) * breite)
+
+        def zei(self, gui):
+            pygame.draw.rect(gui, schwarz, self.rect)  # Hintergrund
+            pygame.draw.rect(gui, weiss, self.knopf)  # Knopf
+
+        def events(self, event):
+            if event.type == pygame.MOUSEBUTTONDOWN and self.knopf.collidepoint(event.pos):
+                self.bewegen = True
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.bewegen = False
+
+            elif event.type == pygame.MOUSEMOTION and hasattr(self, 'bewegen') and self.bewegen: # hasattr = hat das attribut sich zu bewegen
+                self.knopf.centerx = max(self.rect.left, min(event.pos[0], self.rect.right))
+                self.wert = self.min_wert + (self.knopf.centerx - self.rect.left) / self.breite * (self.max_wert - self.min_wert)

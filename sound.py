@@ -14,7 +14,7 @@ sfx = {
     "s.lose":pygame.mixer.Sound("Sounds/sfx/lose.mp3"),
     "s.lose2":pygame.mixer.Sound("Sounds/sfx/lose2.mp3"),
     "s.powerup":pygame.mixer.Sound("Sounds/sfx/powerup.mp3"),
-    "s.sound_sfx":pygame.mixer.Sound("Sounds/sfx/sound_sfx.mp3"),
+    "s.klick":pygame.mixer.Sound("Sounds/sfx/sound_sfx.mp3"),
     "s.win":pygame.mixer.Sound("Sounds/sfx/win.mp3"),
     "s.win2":pygame.mixer.Sound("Sounds/sfx/win2.mp3"),
 }
@@ -40,3 +40,5 @@ musik = {
     "m.retro_streets":"Sounds/musik/retro_streets.mp3",
     "m.short_chiptune_loop":"Sounds/musik/short_chiptune_loop.mp3",
 }
+
+musik_liste = list(musik.keys())
