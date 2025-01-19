@@ -27,7 +27,7 @@ GUI = pygame.display.set_mode((BREITE, HOEHE)) #Spielfenster
 GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg")) #Muss gier definiert werden, weil von GUI abhängig
 START_POS = (370, 960) #(auto)
 
-bilder = [(GRAS, (-1000, -300)), 
+bilder = [(GRAS, (-900, -300)), 
           (STRECKE, (0, 0)),
           (ZIEL_LINIE, (ZIEL_POS[0], ZIEL_POS[1])),
           (BANDE, (0, 0))] #Liste mit Hintergrundobjekten 
@@ -91,16 +91,26 @@ class Gegner(AbstraktAuto):
           self.v = max_v
           
 
-     def zei_wp(self, fenster):
-          for p in self.weg:
+     def zei_wp(self, gui, weg, kam_offs):
+#          for p in self.weg:
 #               punkt_x = p[0] - kam_offs[0]
 #               punkt_y = p[1] - kam_offs[1]
 #               punkte_neu = (punkt_x, punkt_y)
-               pygame.draw.circle(fenster, rot, p, 5) #(fenster,farbe,koordinaten/mitte, radius)
+#               pygame.draw.circle(fenster, rot, p, 5) #(fenster,farbe,koordinaten/mitte, radius)
+          for punkt in weg:
+          # Wegpunkt relativ zur Kamera berechnen
+               punkt_relativ = (punkt[0] + kam_offs[0], punkt[1] + kam_offs[1])
+               # Nur zeichnen, wenn der Punkt im sichtbaren Bereich ist
+               if 0 <= punkt_relativ[0] <= BREITE and 0 <= punkt_relativ[1] <= HOEHE:
+                    pygame.draw.circle(gui, (255, 0, 0), punkt_relativ, 5)
 
      def zei(self, gui):
-          super().zei(gui)
-          self.zei_wp(gui)
+#          super().zei(gui)
+
+          auto_pos_relativ = (self.x + kam_offs_x, self.y + kam_offs_y)
+          blit_rotieren(gui, self.bild, auto_pos_relativ, self.winkel)
+
+          self.zei_wp(gui, WEG, kam_offs)
      
      def winkel_berechnen(self):
           naechster_p_x, naechster_p_y = self.weg[self.wp]

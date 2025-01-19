@@ -151,7 +151,7 @@ ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 0.2 * 
 ZIEL_POS = (230,1100)
 ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE,zoom))
 
-FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.01 * zoom)
+FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.03 * zoom)
 PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.03 * zoom)
 
 HINTERGRUND_HAUPTMENU = bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),1.28)
