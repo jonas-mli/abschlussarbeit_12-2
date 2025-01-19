@@ -1,11 +1,16 @@
 
-##########
-# Import
-##########
+#######################
+# Import Bibliotheken
+#######################
 
 import pygame
+import os
+import time
 import math 
-from sound import musik, sfx
+import multiprocessing
+import concurrent.futures
+from functools import partial
+from sound import *
 
 
 ##################
@@ -26,7 +31,7 @@ dunkelgrau = 30, 30, 30
 rot = 200, 0, 0
 dunkelblau = 0, 30, 80
 menü_grün = 0, 80, 50
-
+creme = 250, 240, 195
 
 ################
 # Schriftarten
@@ -36,7 +41,7 @@ monogram = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 45)
 schrift = pygame.font.SysFont("monogram", 40, False, False)
 tacho_schrift = pygame.font.Font("Texturen/fonts/7Segment/dseg7-regular-normal.ttf", 45)
 rundenzeit_schrift = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 60)
-
+monogram_gross = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 65)
 
 ##############
 # Funktionen
@@ -61,10 +66,10 @@ def zoom_skalieren(bilder, zoom):
 def textur_kacheln(gui, textur, y_pos=0, x_pos=0): # x/y_pos ist um ggf. die Textur zu verschieben 
     # So oft zeichnen, wie es nötig ist, um die Breite des Bildschirms zu füllen
     textur_breite, textur_hoehe = textur.get_size()
-    kachel_ebene = pygame.Surface((BREITE*4, HOEHE*4))
+    kachel_ebene = pygame.Surface((BREITE*8, HOEHE*4))
 
-    for y in range(0, HOEHE + textur_hoehe *2 , textur_hoehe):
-        for x in range(0, BREITE + textur_breite *2, textur_breite): #+100 um überzustehen 
+    for y in range(0, HOEHE + textur_hoehe *4 , textur_hoehe):
+        for x in range(0, BREITE + textur_breite *8, textur_breite): #+100 um überzustehen 
             kachel_ebene.blit(textur, (x + x_pos, y + y_pos))
 
     return kachel_ebene 
@@ -87,10 +92,18 @@ def musik_spielen(song, loop=-1, lautstaerke=0.8):
         pygame.mixer.music.play(loop)
 
 def aktualisiere_masken():
-    global BANDE_MASKE, ZIEL_LINIE_MASKE
-    BANDE_MASKE = pygame.mask.from_surface(bild_skalieren(BANDE, 1))
-    ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE, 1))
+     global BANDE_MASKE, ZIEL_LINIE_MASKE, BANDE, ZIEL_LINIE
+     original_bande = pygame.image.load("Texturen/Bande.png")
+     original_ziel = pygame.image.load("Texturen/Ziel_Linie.png")
 
+     BANDE = bild_skalieren(original_bande, 0.9777 * zoom)
+     ZIEL_LINIE = bild_skalieren(original_ziel, zoom)
+     
+     BANDE_MASKE = pygame.mask.from_surface(BANDE)
+     ZIEL_LINIE_MASKE = pygame.mask.from_surface(ZIEL_LINIE)
+
+def WEG_zoom(weg , zoom): 
+     return[(int(x * zoom), int(y * zoom)) for x,y in weg]
 
 def spieler_bewegen(spieler_auto):
      taste = pygame.key.get_pressed()
@@ -119,21 +132,10 @@ def spieler_bewegen(spieler_auto):
      if not bewegt:
           spieler_auto.reibung()
 
-def tacho(gui, pos_x, pos_y, spieler_auto):    
-#    hintergrund_f = (dunkelgrau)            
-#    rahmen_f = (rot)         
-#    radius = 60
-
-    text_f = (weiss)
+def tacho(gui, pos_x, pos_y, spieler_auto):       
     kmh = abs(int(spieler_auto.v * 12))
-
-    text = monogram.render(f"{kmh} km/h", True, text_f)
-
-#    pygame.draw.rect(gui, hintergrund_f, (pos_x, pos_y))  
-#    pygame.draw.circle(gui, rahmen_f, (pos_x, pos_y), radius, 4)       
+    text = monogram.render(f"{kmh} km/h", True, menü_grün)    
     gui.blit(text, (pos_x - text.get_width() // 2, pos_y - text.get_height() // 2))
-
-
 
 ##############
 # Konstanten 
@@ -144,21 +146,24 @@ zoom = 1
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() ## Weil Spielfenster von Strecke ausgefüllt werden soll wegen circular import doppelt
 
-BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 0.9777) #füroriginal 1.84
-BANDE_MASKE = pygame.mask.from_surface(bild_skalieren(BANDE,zoom))
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 0.9777 * zoom) #füroriginal 1.84
+BANDE_MASKE = pygame.mask.from_surface(BANDE)
 
-ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 0.2 * zoom) #Bande muss Linie Übermalen
-ZIEL_POS = (230,1100)
-ZIEL_LINIE_MASKE = pygame.mask.from_surface(bild_skalieren(ZIEL_LINIE,zoom))
+ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 1 * zoom) #Bande muss Linie Übermalen
 
-FERRARI = bild_skalieren(pygame.image.load("Texturen/Ferrari.png"), 0.03 * zoom)
-PORSCHE = bild_skalieren(pygame.image.load( "Texturen/Porsche.png"), 0.03 * zoom)
+ZIEL_POS = (60,400)
+START_POS = (370, 960) #(auto)
+
+ziel_pos_skaliert = (ZIEL_POS[0]* zoom, ZIEL_POS[1] * zoom)
+ZIEL_LINIE_MASKE = pygame.mask.from_surface(ZIEL_LINIE)
 
 HINTERGRUND_HAUPTMENU = bild_skalieren(pygame.image.load("Texturen/Hauptmenü.png"),1.28)
 HINTERGRUND_PAUSENMENU = bild_skalieren(pygame.image.load("Texturen/Pausenmenü.png"), 1.28)
 HINTERGRUND_EINSTELLUNGSMENU = bild_skalieren(pygame.image.load("Texturen/Einstellungsmenü.png"),1.28)
 
 ICON = pygame.image.load("Texturen/Icon.png")
+
+
 
 ############################
 # Abstraktklasse definieren
@@ -168,14 +173,28 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
 #Klassen sind wie Eigenschaften für eine bestimmte Sache. Sachen können mehrere Klassen besitzen und Klassen können ineinander vererbt werden (siehe class SpielerAuto)
    
      def __init__(self, max_v, rotations_v): #self verweist auf sich selber, der rest sind standard Abhängigkeiten wie von Funktionen gewöhnt
-          self.bild = self.AUTOBILD
-          self.max_v = max_v
+          self.original_bild = pygame.image.load(self.AUTOBILD_PFAD)
+          self.skaliere_auto(zoom)
+          self.basis_max_v = max_v #basis v und rot_v vor zoom
+          self.basis_rotations_v = rotations_v
+          self.basis_beschleunigung = 0.3
+          self.aktualisiere_geschwindigkeit(zoom)
           self.v = 0
-          self.rotations_v = rotations_v
           self.winkel = 0
           self.x, self.y = self.START_POS
-          self.beschleunigung = 0.3
- 
+          
+
+     def aktualisiere_geschwindigkeit(self, zoom_faktor):
+          self.max_v = self.basis_max_v # optimierter als  self.max_v = self.basis_max_v / zoom_faktor 
+          self.rotations_v = self.basis_rotations_v #besser als self.rotations_v = self.basis_rotations_v / zoom_faktor
+          self.beschleunigung = self.basis_beschleunigung
+
+          self.bewegungs_faktor = 1 / zoom_faktor if zoom_faktor > 1 else 1 # skalierter gesschw.faktor für zoom
+          #if hasattr(self, 'v'): #debugging geschwindigkeitsanpassugn
+          #  self.v = self.v / zoom_faktor
+
+     def skaliere_auto(self, zoom_faktor):
+        self.bild = bild_skalieren(self.original_bild, self.SKALIERUNG * zoom_faktor)
 
      def rotieren(self, links = False, rechts = False):
           if links:
@@ -200,8 +219,8 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
      
      def bewegen(self):
           radianten = math.radians(self.winkel) # In Radianten konvertieren, weil Computer besser damit rechnen
-          vertikale = math.cos(radianten) * self.v 
-          horizontale = math.sin(radianten) * self.v
+          vertikale = math.cos(radianten) * self.v * self.bewegungs_faktor 
+          horizontale = math.sin(radianten) * self.v * self.bewegungs_faktor
 
           self.y -= vertikale #Wegen Winkel muss subtrahiert werden
           self.x -= horizontale
@@ -214,7 +233,18 @@ class AbstraktAuto: # Siehe objektorientierte Programmierung
           auto_maske = pygame.mask.from_surface(self.bild)
           offset = (int(self.x - x), int(self.y - y))
 
-          schnittP = maske.overlap(auto_maske, offset) #Schnittpunkt
+          if maske is None: #debugging für maske und zoom
+               print("Warnung: Maske ist None")
+               return None
+        
+          try:
+               schnittP = maske.overlap(auto_maske, offset) #= schnittpunkt
+               return schnittP
+          
+          except Exception as e:
+               print(f"Fehler bei Kollisionserkennung: {e}")
+               return None
+
 
 #          print('kollision')
 #          print(f"offset: {offset}, spieler: ({self.x}, {self.y}), hindernis: ({x}, {y})")
@@ -243,7 +273,7 @@ class Allg:
           self.zoom = zoom
           self.lautstaerke = 0.8
 #          self.lautstaerke = pygame.mixer.music.get_volume()
-          self.slider_zoom = self.Slider(BREITE // 2 - 150, 500, 300, 1, 5, self.zoom)
+          self.slider_zoom = self.Slider(BREITE // 2 - 150, 500, 300, 1, 3, self.zoom)
           self.slider_lautstaerke = self.Slider(BREITE // 2 - 150, 700, 300, 0, 1, self.lautstaerke)
 
           
@@ -258,8 +288,8 @@ class Allg:
             self.knopf.centerx = x + int((start_wert - min_wert) / (max_wert - min_wert) * breite)
 
         def zei(self, gui):
-            pygame.draw.rect(gui, schwarz, self.rect)  # Hintergrund
-            pygame.draw.rect(gui, weiss, self.knopf)  # Knopf
+            pygame.draw.rect(gui, menü_grün, self.rect)  
+            pygame.draw.rect(gui, creme, self.knopf)  
 
         def events(self, event):
             if event.type == pygame.MOUSEBUTTONDOWN and self.knopf.collidepoint(event.pos):
@@ -271,3 +301,84 @@ class Allg:
             elif event.type == pygame.MOUSEMOTION and hasattr(self, 'bewegen') and self.bewegen: # hasattr = hat das attribut sich zu bewegen
                 self.knopf.centerx = max(self.rect.left, min(event.pos[0], self.rect.right))
                 self.wert = self.min_wert + (self.knopf.centerx - self.rect.left) / self.breite * (self.max_wert - self.min_wert)
+
+
+     def speichere_highscore(self,zeit):
+          highscores = Allg.lade_highscores()
+          highscores.append(zeit)
+          highscores.sort()
+          highscores = highscores[:5]
+          with open("highscores.txt", "w") as file:
+               for score in highscores:
+                    file.write(f"{score:.2f}\n")
+
+     def lade_highscores():
+          highscores = []
+          # Wenn die Datei existiert, lade die Zeiten
+          if os.path.exists("highscores.txt"):
+               with open("highscores.txt", "r") as file:
+                    for line in file:
+                         highscores.append(float(line.strip()))
+          return highscores
+ 
+     def zeige_highscores(self, gui):
+          highscores = Allg.lade_highscores()
+          y_pos = 50
+          titel = monogram_gross.render("TOP 5 RUNDENZEITEN", True, menü_grün)
+          gui.blit(titel, (BREITE // 2 - titel.get_width() // 2, y_pos))
+          
+          for i, score in enumerate(highscores, 1):
+               y_pos += 50
+               text = monogram.render(f"{i}. {score:.2f} Sekunden", True, menü_grün)
+               gui.blit(text, (BREITE // 2 - text.get_width() // 2, y_pos))
+
+
+class GameProcessor: # klasse für multiprocessing
+    # Siehe https://docs.python.org/3/library/multiprocessing.html & https://docs.python.org/3/library/concurrent.futures.html 
+    
+     def __init__(self):
+        self.pool = None #debugging und errorhandling
+        
+     def init_pool(self):
+        try:
+            self.pool = concurrent.futures.ProcessPoolExecutor(
+                max_workers=multiprocessing.cpu_count()
+            )
+        except Exception as e:
+            print(f"fehler beim initialisieren von porcess pool: {e}")
+            self.pool = None
+
+
+     def process_physics(self, spieler_auto, gegner_auto, bilder_s):
+        futures = []
+        
+        futures.append(self.pool.submit( #spieler
+            self.update_player_physics, 
+            spieler_auto.x, spieler_auto.y, 
+            spieler_auto.v, spieler_auto.winkel
+        ))
+        
+        futures.append(self.pool.submit( # gegner
+            self.update_opponent_physics,
+            gegner_auto.x, gegner_auto.y,
+            gegner_auto.v, gegner_auto.winkel
+        ))
+        
+        results = [f.result() for f in futures] #auf ergebnisse warten
+        return results
+
+
+     @staticmethod #dekorateur (siehe /Dokumente/Erkenntnisse & Wissenswertes.txt)
+     def update_player_physics(x, y, v, winkel): #berechnungen für spielrer
+        radianten = math.radians(winkel)
+        vertikale = math.cos(radianten) * v
+        horizontale = math.sin(radianten) * v
+        return x - horizontale, y - vertikale
+
+
+     @staticmethod #dekorateur 
+     def update_opponent_physics(x, y, v, winkel): #berechnungen für gegner
+        radianten = math.radians(winkel)
+        vertikale = math.cos(radianten) * v
+        horizontale = math.sin(radianten) * v
+        return x - horizontale, y - vertikale
