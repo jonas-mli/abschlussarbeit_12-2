@@ -47,6 +47,8 @@ monogram_gross = pygame.font.Font("Texturen/fonts/monogram/monogram.ttf", 65)
 # Funktionen
 ##############
 
+skalierungs_cache = {}
+
 def blit_rotieren(gui, bild, oben_links, winkel):
     rotiertes_bild = pygame.transform.rotate(bild, winkel)
     neues_rechteck = rotiertes_bild.get_rect(center = bild.get_rect(topleft = oben_links).center) #benötigt um Viereck des Bildes zu rotieren, ohne x und y Koordinaten zu verändern oder Bild zu verzerren. Erklärung: Neues Riereck soll zentriert zu Viereck des Bildes an der Stekke oben Links sein 
@@ -57,7 +59,26 @@ def bild_skalieren(bild, wert):
     return pygame.transform.scale(bild, groesse)
 
 bilder_s = []
-def zoom_skalieren(bilder, zoom):         
+def zoom_skalieren(bilder, zoom):
+     global bilder_s
+#     bilder_s = []
+     
+#     if not hasattr(zoom_skalieren, 'skalierungs_cache'):
+#          zoom_skalieren.skalierungs_cache = {}
+     
+#     for bild, pos in bilder:
+#          cache_key = (id(bild), zoom) #bestimmter schlüssel, der den Bild und die Zoomfaktor angibt, um die Skalierung zu identifizieren
+          
+#          if cache_key in zoom_skalieren.skalierungs_cache:
+#               bild_s = zoom_skalieren.skalierungs_cache[cache_key]
+#          else:
+#               groesse = (round(bild.get_width() * zoom), round(bild.get_height() * zoom))
+#               bild_s = pygame.transform.scale(bild, groesse)
+#               zoom_skalieren.skalierungs_cache[cache_key] = bild_s
+               
+#          bilder_s.append((bild_s, pos))
+     
+#     return bilder_s         
      for bild, pos in bilder:
         bild_s = bild_skalieren(bild, zoom)
         bilder_s.append((bild_s, pos))
@@ -93,12 +114,27 @@ def musik_spielen(song, loop=-1, lautstaerke=0.8):
 
 def aktualisiere_masken():
      global BANDE_MASKE, ZIEL_LINIE_MASKE, BANDE, ZIEL_LINIE
-     original_bande = pygame.image.load("Texturen/Bande.png")
-     original_ziel = pygame.image.load("Texturen/Ziel_Linie.png")
-
-     BANDE = bild_skalieren(original_bande, 0.9777 * zoom)
-     ZIEL_LINIE = bild_skalieren(original_ziel, zoom)
      
+#     if not hasattr(aktualisiere_masken, 'original_bande'):
+#        aktualisiere_masken.original_bande = pygame.image.load("Texturen/Bande.png")
+#        aktualisiere_masken.original_ziel = pygame.image.load("Texturen/Ziel_Linie.png")
+
+#     BANDE = pygame.transform.scale(
+#        aktualisiere_masken.original_bande,
+#        (int(aktualisiere_masken.original_bande.get_width() * 0.9777 * zoom),
+#         int(aktualisiere_masken.original_bande.get_height() * 0.9777 * zoom)))
+
+#     ZIEL_LINIE = pygame.transform.scale(
+#        aktualisiere_masken.original_ziel,
+#        (int(aktualisiere_masken.original_ziel.get_width() * zoom),
+#         int(aktualisiere_masken.original_ziel.get_height() * zoom)))
+    
+     #original_bande = pygame.image.load("Texturen/Bande.png")
+     #original_ziel = pygame.image.load("Texturen/Ziel_Linie.png")
+
+     #BANDE = bild_skalieren(original_bande, 0.9777 * zoom)
+     #ZIEL_LINIE = bild_skalieren(original_ziel, zoom)
+
      BANDE_MASKE = pygame.mask.from_surface(BANDE)
      ZIEL_LINIE_MASKE = pygame.mask.from_surface(ZIEL_LINIE)
 
@@ -141,18 +177,20 @@ def tacho(gui, pos_x, pos_y, spieler_auto):
 # Konstanten 
 ##############
 
-zoom = 1
-
+zoom = 2
+#aktualisiere_masken()
 STRECKE = bild_skalieren(pygame.image.load("Texturen/Strecke.png"), 0.85)
 BREITE, HOEHE = STRECKE.get_width(), STRECKE.get_height() ## Weil Spielfenster von Strecke ausgefüllt werden soll wegen circular import doppelt
 
-BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 0.9777 * zoom) #füroriginal 1.84
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), 0.977*zoom) #füroriginal 1.84
+#BANDE = pygame.image.load("Texturen/Bande.png")
 BANDE_MASKE = pygame.mask.from_surface(BANDE)
+BANDE = bild_skalieren(pygame.image.load("Texturen/Bande.png"), (0.977*zoom)/2) 
 
-ZIEL_LINIE = bild_skalieren(pygame.image.load("Texturen/Ziel_Linie.png"), 1 * zoom) #Bande muss Linie Übermalen
+ZIEL_LINIE = pygame.image.load("Texturen/Ziel_Linie.png") #Bande muss Linie Übermalen
 
 ZIEL_POS = (60,400)
-START_POS = (370, 960) #(auto)
+START_POS = (100, 290) #(auto)
 
 ziel_pos_skaliert = (ZIEL_POS[0]* zoom, ZIEL_POS[1] * zoom)
 ZIEL_LINIE_MASKE = pygame.mask.from_surface(ZIEL_LINIE)
@@ -162,6 +200,7 @@ HINTERGRUND_PAUSENMENU = bild_skalieren(pygame.image.load("Texturen/Pausenmenü.
 HINTERGRUND_EINSTELLUNGSMENU = bild_skalieren(pygame.image.load("Texturen/Einstellungsmenü.png"),1.28)
 
 ICON = pygame.image.load("Texturen/Icon.png")
+
 
 
 

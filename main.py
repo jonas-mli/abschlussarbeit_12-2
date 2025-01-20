@@ -43,7 +43,7 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
      #pygame.display.set_mode((BREITE, HOEHE), pygame.RESIZABLE| pygame.NOFRAME)
      GRAS = textur_kacheln(GUI,pygame.image.load("Texturen/Gras.jpg")) #Muss gier definiert werden, weil von GUI abhängig
     
-
+     
      bilder = [(GRAS, (-1900, -800)), 
                (STRECKE, (0, 0)),
                (ZIEL_LINIE, (ziel_pos_skaliert[0], ziel_pos_skaliert[1])),
@@ -60,6 +60,16 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
           for bild, pos in bilder_s:
                n_pos = [pos[p] + kam_offs[p] for p in range(2)] #neue position #n_pos = [pos[p] + kam_offs[p] for p in range(2)]
                gui.blit(bild,n_pos) #
+
+#          kamera_rect = pygame.Rect(-BREITE, -HOEHE, BREITE *100, HOEHE*100)
+#    
+#          for bild, pos in bilder_s:
+#               n_pos = [pos[p] + kam_offs[p] for p in range(2)]
+#               bild_rect = bild.get_rect(topleft=n_pos)
+               
+#               if kamera_rect.colliderect(bild_rect):
+#                    gui.blit(bild, n_pos)
+
           spieler_auto.zei(gui)
           gegner_auto.zei(gui)
 
@@ -71,7 +81,7 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
 
      class SpielerAuto(AbstraktAuto): #Attribute für Spielerauto
           AUTOBILD_PFAD = "Texturen/Porsche.png" 
-          SKALIERUNG = 0.04
+          SKALIERUNG = 0.035
           START_POS = START_POS
           def __init__(self,max_v,rotations_v):
                #self.start_offset_x = 0 # Ist wie START_POS (benötigt da während Programmierung der Kameraperspektive Probleme auftraten)
@@ -94,7 +104,7 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
           def vorwaerts_bewegen(self):
                if not pygame.mixer.Channel(0).get_busy():
                     pygame.mixer.Channel(0).play(self.motor_sound)
-                    super().vorwaerts_bewegen()
+               super().vorwaerts_bewegen()
      #     def timer(self):
      #          self.gestartet = True 
      #          self.zeit = time.time()
@@ -197,7 +207,10 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
           button_e_rect = pygame.Rect(48 ,690, 100, 100)
           button_anleitung_rect = pygame.Rect(1320, 510, 300, 300)
 
-          musik_spielen(menu_musik)
+          #musik_spielen(menu_musik)
+
+          if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1:
+               musik_spielen(menu_musik)
 
           while m_aktiv:
                clock.tick(FPS)
@@ -231,9 +244,11 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                          
                          if button_start_rect.collidepoint(mouse_pos):
                               sfx_spielen("s.klick")
-                              musik_spielen(spiel_musik)  
+                              if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1:
+                                   musik_spielen(menu_musik,-1,aktuelle_lautstaerke)  
                               m_aktiv = False  
                               GUI.fill(weiss)
+                              allg.rundenstart = pygame.time.get_ticks()
 
                          if button_e_rect.collidepoint(mouse_pos):
                               sfx_spielen("s.klick")
@@ -271,7 +286,12 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
           button_e_rect = pygame.Rect(48 ,690, 100, 100)
           button_anleitung_rect = pygame.Rect(1320, 510, 300, 300)
 
-          musik_spielen(menu_musik)
+          aktuelle_lautstaerke = pygame.mixer.music.get_volume()
+          pygame.mixer.music.set_volume(aktuelle_lautstaerke)
+          if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1:
+               musik_spielen(menu_musik)
+
+          #musik_spielen(menu_musik)
 
           while True:
                clock.tick(FPS)
@@ -302,7 +322,8 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                               mouse_pos = pygame.mouse.get_pos()
                               if button_weiter_rect.collidepoint(mouse_pos):
                                    sfx_spielen("s.klick")
-                                   musik_spielen(spiel_musik)
+                                   if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1:
+                                        musik_spielen(menu_musik,-1,aktuelle_lautstaerke)
                                    GUI.fill(weiss)
                                    return True  
                               
@@ -406,9 +427,9 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                     
                     if event.type == pygame.MOUSEBUTTONUP:
                          if zoom != allg.slider_zoom.wert:
-                              zoom_alt = zoom
+#                              zoom_alt = zoom
                               zoom = allg.slider_zoom.wert
-                              zoom_faktor = zoom / zoom_alt
+#                              zoom_faktor = zoom / zoom_alt
 
                               WEG_SKALIERT = WEG_zoom(WEG, zoom) #neue skalierung nach neuem zoomwert
                               bilder_s = zoom_skalieren(bilder, zoom)
@@ -432,9 +453,10 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
      WEG_SKALIERT = WEG_zoom(WEG, zoom)
 
      allg = Allg()
-     spieler_auto = SpielerAuto(12,8) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
+     spieler_auto = SpielerAuto(8,10) # Spielerauto(Max_Geschwindigkeit, Max_Rotationsgeschwindigkeit)
      gegner_auto = Gegner(3, 5, WEG_SKALIERT)
      game_processor = GameProcessor()
+     game_processor.init_pool()
 
      aktiv = True 
      pausiert = False
@@ -442,9 +464,12 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
 
      hauptmenu()
      aktualisiere_masken()
-     musik_spielen(spiel_musik)
+     aktuelle_lautstaerke = pygame.mixer.music.get_volume()
+     pygame.mixer.music.set_volume(aktuelle_lautstaerke)
+     if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1:
+          musik_spielen(spiel_musik,-1,aktuelle_lautstaerke)
 
-     GUI.fill(weiss)
+     GUI.fill((148,196,52))
      pygame.display.update()
 
      kam_offs_x = -(spieler_auto.x - (BREITE // 2))
@@ -469,7 +494,7 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                kam_offs = (kam_offs_x, kam_offs_y)
 
                #print(f"X:{spieler_auto.x}, Y:{spieler_auto.y}")
-               GUI.fill(weiss) #renderingoptimierung
+               #GUI.fill(weiss) #renderingoptimierung
 
                sichtbare_bilder = [
                (bild, coords) for bild, coords in bilder_s 
@@ -478,7 +503,7 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                ]
 
                for bild, coords in sichtbare_bilder:
-                    n_pos = [pos[p]+ kam_offs[p] for p in range(2)]
+                    n_pos = [coords[p]+ kam_offs[p] for p in range(2)]
                     GUI.blit(bild, n_pos) 
                auto_maske = pygame.mask.from_surface(spieler_auto.bild)
                
@@ -516,12 +541,13 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                     allg.speichere_highscore(rundenzeit_sekunden)
      #               rundenzeit_text = monogram.render(f"{rundenzeit /1000:.2f}", True, rot)
                     allg.zeige_highscores(GUI)
+                    allg.rundenstart = pygame.time.get_ticks()
 
      #               GUI.blit(rundenzeit_text, (BREITE // 2 - rundenzeit_text.get_width() // 2, HOEHE // 2))
 
                     pygame.display.update()
                     pygame.time.delay(3000)
-                    allg.rundenstart = pygame.time.get_ticks()
+#                    allg.rundenstart = pygame.time.get_ticks()
                     allg.pausenzeit = 0
                     print(ziel_schnittP)
                     if ziel_schnittP[1] == 0:
