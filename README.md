@@ -10,8 +10,8 @@ Purer Formel1-Spaß für alle…
 
 ## Spiel-Steuerung mit Tastatur :
 
-**Vorwärts - W**\
-**Rechts - A**\  
-**Rückwärts -	S**\ 
-**Links -	D**\ 
-**Pausieren -	ESC-Taste**\ 
+**Vorwärts - W**  
+**Rechts - A**   
+**Rückwärts -	S**   
+**Links -	D**   
+**Pausieren -	ESC-Taste**   
