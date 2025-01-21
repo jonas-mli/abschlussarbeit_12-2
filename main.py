@@ -209,7 +209,7 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
 
           #musik_spielen(menu_musik)
 
-          if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1:
+          if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1: #Musik 
                musik_spielen(menu_musik)
 
           while m_aktiv:
@@ -245,7 +245,7 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                          if button_start_rect.collidepoint(mouse_pos):
                               sfx_spielen("s.klick")
                               if not pygame.mixer.music.get_busy() or pygame.mixer.music.get_pos() == -1:
-                                   musik_spielen(menu_musik,-1,aktuelle_lautstaerke)  
+                                   musik_spielen(spiel_musik,-1,aktuelle_lautstaerke)  
                               m_aktiv = False  
                               GUI.fill(weiss)
                               allg.rundenstart = pygame.time.get_ticks()
