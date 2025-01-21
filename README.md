@@ -1,5 +1,7 @@
 Dieses Programm wurde als Abschlussarbeit des Informatikunterrichts in 12/2 von Jonas Michalski und Pius Fiebig erstellt.
 
+#Spielanleitung
+
 Hallo lieber Nutzer,
 vielen Dank für den Erwerb unseres ersten Computer-Rennspiels in Pygame. Wir sind die Entwickler von KGS-Turismo, dem ultimativen Racing-Game fürs Büro oder die Freizeit. 
 Bei KGS-Turismo werden Runden auf einer Rennstrecke auf Zeit gefahren. Die erreichte Rundenzeit wird am Ende einer jeden Runde gespeichert. 
