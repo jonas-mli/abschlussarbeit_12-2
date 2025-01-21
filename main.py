@@ -256,7 +256,12 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                               if menu:
                                    menu()
                                    return 
-                                                  
+
+                         if button_anleitung_rect.collidepoint(mouse_pos):
+                              sfx_spielen("s.klick")
+                              webbrowser.open("https://github.com/jonas-mli/abschlussarbeit_12-2?tab=readme-ov-file#spielanleitung")                              
+
+
                          if button_stop_rect.collidepoint(mouse_pos):
                               sfx_spielen("s.klick")  
                               pygame.quit()
@@ -333,7 +338,12 @@ def main(): #ganze Datei muss in main() sein (notwendig für multiprocess)
                                    if menu:
                                         menu()
                                         return
-                         
+
+                              if button_anleitung_rect.collidepoint(mouse_pos):
+                                   sfx_spielen("s.klick")
+                                   webbrowser.open("https://github.com/jonas-mli/abschlussarbeit_12-2?tab=readme-ov-file#spielanleitung")                              
+
+
                               if button_hauptmenu_rect.collidepoint(mouse_pos):
                                    sfx_spielen("s.klick")
                                    hauptmenu()  
